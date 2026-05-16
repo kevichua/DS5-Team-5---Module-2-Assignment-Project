@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data files
+data/raw/*
+data/staging/*
+data/processed/*
+
+# Keep folders
+!data/raw/.gitkeep
+!data/staging/.gitkeep
+!data/processed/.gitkeep
+
+# Database files
+*.duckdb
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db

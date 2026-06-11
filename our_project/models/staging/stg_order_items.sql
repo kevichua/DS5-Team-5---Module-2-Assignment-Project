@@ -6,4 +6,4 @@ SELECT
     TIMESTAMP(shipping_limit_date) AS shipping_limit_at,
     CAST(price AS FLOAT64)         AS price,
     CAST(freight_value AS FLOAT64) AS freight_value
-FROM {{ source('kaggle_data', 'order_items') }}
+FROM {{ source('Supabase_data', 'public_sb_order_items_dataset') }}

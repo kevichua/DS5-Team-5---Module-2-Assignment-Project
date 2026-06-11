@@ -8,4 +8,4 @@ SELECT
     CAST(product_length_cm AS INT64)          AS length_cm,
     CAST(product_height_cm AS INT64)          AS height_cm,
     CAST(product_width_cm AS INT64)           AS width_cm
-FROM {{ source('kaggle_data', 'products') }}
+FROM {{ source('Supabase_data', 'public_sb_products_dataset') }}

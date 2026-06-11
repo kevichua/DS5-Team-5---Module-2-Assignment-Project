@@ -1,16 +1,16 @@
 version: 2
 
 sources:
-  - name: kaggle_data
+  - name: Supabase_data
     database: our-project-93971
-    schema: kaggle_data
+    schema: Supabase_data
     tables:
-      - name: customers
-      - name: orders
-      - name: order_items
-      - name: order_payments
-      - name: order_reviews
-      - name: products
-      - name: sellers
-      - name: geolocation
-      - name: category_name_translation
+      - name: public_sb_customers_dataset
+      - name: public_sb_orders_dataset
+      - name: public_sb_order_items_dataset
+      - name: public_sb_order_payments_dataset
+      - name: public_sb_order_reviews_dataset
+      - name: public_sb_products_dataset
+      - name: public_sb_sellers_dataset
+      - name: public_sb_geolocation_dataset
+      - name: public_sb_product_category_name_translation

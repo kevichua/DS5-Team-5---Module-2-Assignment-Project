@@ -7,4 +7,4 @@ SELECT
     TIMESTAMP(order_delivered_carrier_date)  AS delivered_carrier_at,
     TIMESTAMP(order_delivered_customer_date) AS delivered_customer_at,
     TIMESTAMP(order_estimated_delivery_date) AS estimated_delivery_at
-FROM {{ source('kaggle_data', 'orders') }}
+FROM {{ source('Supabase_data', 'public_sb_orders_dataset') }}

@@ -4,4 +4,4 @@ SELECT
     CAST(geolocation_lng AS FLOAT64)            AS lng,
     geolocation_city                            AS city,
     geolocation_state                           AS state
-FROM {{ source('kaggle_data', 'geolocation') }}
+FROM {{ source('Supabase_data', 'public_sb_geolocation_dataset') }}

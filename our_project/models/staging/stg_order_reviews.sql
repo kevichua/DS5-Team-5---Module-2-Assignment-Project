@@ -6,4 +6,4 @@ SELECT
     NULLIF(review_comment_message, '') AS review_comment_message,
     TIMESTAMP(review_creation_date)    AS review_created_at,
     TIMESTAMP(review_answer_timestamp) AS review_answered_at
-FROM {{ source('kaggle_data', 'order_reviews') }}
+FROM {{ source('Supabase_data', 'public_sb_order_reviews_dataset') }}

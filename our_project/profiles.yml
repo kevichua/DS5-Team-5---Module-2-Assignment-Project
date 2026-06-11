@@ -1,0 +1,13 @@
+our_project:
+  outputs:
+    dev:
+      dataset: Extracted_data
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      location: US
+      method: oauth
+      priority: interactive
+      project: our-project-93971
+      threads: 1
+      type: bigquery
+  target: dev

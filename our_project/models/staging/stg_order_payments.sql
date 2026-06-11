@@ -4,4 +4,4 @@ SELECT
     payment_type,
     payment_installments,
     CAST(payment_value AS FLOAT64) AS payment_value
-FROM {{ source('kaggle_data', 'order_payments') }}
+FROM {{ source('Supabase_data', 'public_sb_order_payments_dataset') }}

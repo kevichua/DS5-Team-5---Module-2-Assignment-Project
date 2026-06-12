@@ -2,4 +2,7 @@ pandas
 duckdb
 jupyter
 matplotlib
+seaborn
 sqlalchemy
+google-cloud-bigquery
+db-dtypes

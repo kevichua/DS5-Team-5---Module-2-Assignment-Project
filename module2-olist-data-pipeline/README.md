@@ -143,16 +143,17 @@ Loads all 9 tables into `our-project-93971.Supabase_data` as `public_sb_*`.
 ### Step 3 — Transform with dbt
 
 ```bash
+conda activate elt
 cd our_project
 
 # Verify connection
-/home/fionalyh/miniconda3/envs/elt/bin/dbt debug
+dbt debug
 
 # Build all models (staging → data_quality → star)
-/home/fionalyh/miniconda3/envs/elt/bin/dbt run
+dbt run
 
 # Run all tests
-/home/fionalyh/miniconda3/envs/elt/bin/dbt test
+dbt test
 ```
 
 Expected: `24 of 24 OK` on run, `53 of 53 PASS` on test.

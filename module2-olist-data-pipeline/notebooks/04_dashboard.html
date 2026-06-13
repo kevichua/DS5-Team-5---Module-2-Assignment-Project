@@ -220,21 +220,14 @@ const MONTHLY_ORDERS = [
 
 const SCORE_COLORS = ['#EF5350','#FF7043','#FFA726','#9CCC65','#4CAF50'];
 
-/* ── Tab switcher ─────────────────────────────────────────────────────────── */
-function switchTab(id) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  document.querySelectorAll('.tab')[['overview','revenue','delivery'].indexOf(id)].classList.add('active');
-}
-
 /* ── Chart factory helpers ────────────────────────────────────────────────── */
 function barChart(id, labels, data, colors, opts = {}) {
   return new Chart(document.getElementById(id), {
     type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4, ...opts.dataset }] },
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4 }] },
     options: {
-      responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: opts.tooltipLabel } } },
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: opts.tooltipLabel } } },
       scales: {
         x: { grid: { display: false }, ticks: { font: { size: 11 } } },
         y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, callback: opts.yTick } },
@@ -246,7 +239,7 @@ function barChart(id, labels, data, colors, opts = {}) {
 function hbarChart(id, labels, data, colors, opts = {}) {
   return new Chart(document.getElementById(id), {
     type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4, ...opts.dataset }] },
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4 }] },
     options: {
       indexAxis: 'y', responsive: true,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: opts.tooltipLabel } } },
@@ -258,154 +251,115 @@ function hbarChart(id, labels, data, colors, opts = {}) {
   });
 }
 
-/* ── Build all charts ─────────────────────────────────────────────────────── */
-
-// Monthly — combo line + bar
-new Chart(document.getElementById('chart-monthly'), {
-  data: {
-    labels: MONTHLY_LABELS,
-    datasets: [
-      {
-        type: 'bar', label: 'Orders', data: MONTHLY_ORDERS,
-        backgroundColor: '#90CAF980', yAxisID: 'yOrd',
-      },
-      {
-        type: 'line', label: 'Revenue (BRL)', data: MONTHLY_REVENUE,
-        borderColor: '#1565C0', backgroundColor: '#1565C020',
-        fill: true, tension: 0.3, pointRadius: 3, yAxisID: 'yRev',
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: ctx => ctx.dataset.label === 'Revenue (BRL)'
-            ? `Revenue: R$ ${ctx.parsed.y.toLocaleString()}`
-            : `Orders: ${ctx.parsed.y.toLocaleString()}`,
-        },
+/* ── Per-tab init functions (lazy — called only when tab first opens) ─────── */
+function initOverview() {
+  new Chart(document.getElementById('chart-monthly'), {
+    data: {
+      labels: MONTHLY_LABELS,
+      datasets: [
+        { type: 'bar',  label: 'Orders',       data: MONTHLY_ORDERS,  backgroundColor: '#90CAF980', yAxisID: 'yOrd' },
+        { type: 'line', label: 'Revenue (BRL)', data: MONTHLY_REVENUE, borderColor: '#1565C0',
+          backgroundColor: '#1565C020', fill: true, tension: 0.3, pointRadius: 3, yAxisID: 'yRev' },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: { tooltip: { callbacks: { label: ctx =>
+        ctx.dataset.label === 'Revenue (BRL)'
+          ? `Revenue: R$ ${ctx.parsed.y.toLocaleString()}`
+          : `Orders: ${ctx.parsed.y.toLocaleString()}`
+      }}},
+      scales: {
+        x:    { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } },
+        yRev: { position: 'left',  grid: { color: '#f0f0f0' }, ticks: { font: { size: 9 }, callback: v => `R$ ${(v/1e6).toFixed(1)}M` } },
+        yOrd: { position: 'right', grid: { display: false },   ticks: { font: { size: 9 }, callback: v => v.toLocaleString() } },
       },
     },
-    scales: {
-      x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } },
-      yRev: {
-        position: 'left', grid: { color: '#f0f0f0' },
-        ticks: { font: { size: 9 }, callback: v => `R$ ${(v/1e6).toFixed(1)}M` },
+  });
+
+  new Chart(document.getElementById('chart-status'), {
+    type: 'doughnut',
+    data: {
+      labels: ['delivered','shipped','canceled','unavailable','invoiced','processing','created','approved'],
+      datasets: [{ data: [96478,1107,625,609,314,301,5,2],
+        backgroundColor: ['#1976D2','#FFA726','#EF5350','#AB47BC','#66BB6A','#78909C','#8D6E63','#00ACC1'] }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toLocaleString()}` } },
       },
-      yOrd: {
-        position: 'right', grid: { display: false },
-        ticks: { font: { size: 9 }, callback: v => v.toLocaleString() },
+    },
+  });
+
+  barChart('chart-review-overview', ['1 ★','2 ★','3 ★','4 ★','5 ★'], [9355,2921,7917,18888,56749], SCORE_COLORS,
+    { tooltipLabel: ctx => `${ctx.parsed.y.toLocaleString()} orders`, yTick: v => v.toLocaleString() });
+
+  barChart('chart-late-overview', ['1 ★','2 ★','3 ★','4 ★','5 ★'], [36.7,18.9,8.8,3.4,1.9], SCORE_COLORS,
+    { tooltipLabel: ctx => `${ctx.parsed.y}% late`, yTick: v => `${v}%` });
+}
+
+function initRevenue() {
+  hbarChart(
+    'chart-categories',
+    ['garden_tools','auto','cool_stuff','housewares','furniture_decor',
+     'computers_accessories','sports_leisure','bed_bath_table','watches_gifts','health_beauty'],
+    [584219,685384,719330,778398,902512,1059272,1156656,1241682,1305542,1441248],
+    ['#0D47A1','#1565C0','#1976D2','#1E88E5','#2196F3','#42A5F5','#64B5F6','#90CAF9','#BBDEFB','#E3F2FD'].reverse(),
+    { tooltipLabel: ctx => `R$ ${ctx.parsed.x.toLocaleString()}`, xTick: v => `R$ ${(v/1e3).toFixed(0)}K` }
+  );
+
+  hbarChart(
+    'chart-states',
+    ['Espírito Santo (ES)','Goiás (GO)','Distrito Federal (DF)','Bahia (BA)',
+     'Santa Catarina (SC)','Paraná (PR)','Rio Grande do Sul (RS)',
+     'Minas Gerais (MG)','Rio de Janeiro (RJ)','São Paulo (SP)'],
+    [325968,350092,355141,616646,623086,811156,890899,1872257,2144380,5998227],
+    ['#1B5E20','#2E7D32','#388E3C','#43A047','#4CAF50','#66BB6A','#81C784','#A5D6A7','#C8E6C9','#E8F5E9'].reverse(),
+    { tooltipLabel: ctx => `R$ ${ctx.parsed.x.toLocaleString()}`, xTick: v => `R$ ${(v/1e6).toFixed(1)}M` }
+  );
+
+  new Chart(document.getElementById('chart-monthly-rev'), {
+    type: 'line',
+    data: { labels: MONTHLY_LABELS, datasets: [{
+      label: 'Revenue', data: MONTHLY_REVENUE,
+      borderColor: '#1565C0', backgroundColor: '#1565C020', fill: true, tension: 0.3, pointRadius: 3,
+    }]},
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `R$ ${ctx.parsed.y.toLocaleString()}` } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } },
+        y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 9 }, callback: v => `R$ ${(v/1e6).toFixed(1)}M` } },
       },
     },
-  },
-});
+  });
+}
 
-// Order status doughnut
-new Chart(document.getElementById('chart-status'), {
-  type: 'doughnut',
-  data: {
-    labels: ['delivered','shipped','canceled','unavailable','invoiced','processing','created','approved'],
-    datasets: [{
-      data: [96478,1107,625,609,314,301,5,2],
-      backgroundColor: ['#1976D2','#FFA726','#EF5350','#AB47BC','#66BB6A','#78909C','#8D6E63','#00ACC1'],
-    }],
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } },
-      tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toLocaleString()}` } },
-    },
-  },
-});
+function initDelivery() {
+  barChart('chart-review-delivery', ['1 ★','2 ★','3 ★','4 ★','5 ★'], [9355,2921,7917,18888,56749], SCORE_COLORS,
+    { tooltipLabel: ctx => `${ctx.parsed.y.toLocaleString()} orders`, yTick: v => v.toLocaleString() });
 
-// Review score — Overview
-barChart(
-  'chart-review-overview',
-  ['1 ★','2 ★','3 ★','4 ★','5 ★'],
-  [9355,2921,7917,18888,56749],
-  SCORE_COLORS,
-  { tooltipLabel: ctx => `${ctx.parsed.y.toLocaleString()} orders`, yTick: v => v.toLocaleString() }
-);
+  barChart('chart-late-delivery', ['1 ★','2 ★','3 ★','4 ★','5 ★'], [36.7,18.9,8.8,3.4,1.9], SCORE_COLORS,
+    { tooltipLabel: ctx => `${ctx.parsed.y}% late`, yTick: v => `${v}%` });
+}
 
-// % Late by score — Overview
-barChart(
-  'chart-late-overview',
-  ['1 ★','2 ★','3 ★','4 ★','5 ★'],
-  [36.7,18.9,8.8,3.4,1.9],
-  SCORE_COLORS,
-  { tooltipLabel: ctx => `${ctx.parsed.y}% late`, yTick: v => `${v}%` }
-);
+/* ── Tab switcher with lazy init ──────────────────────────────────────────── */
+const TAB_INIT = { overview: initOverview, revenue: initRevenue, delivery: initDelivery };
+const done     = {};
 
-// Top 10 categories
-hbarChart(
-  'chart-categories',
-  ['garden_tools','auto','cool_stuff','housewares','furniture_decor',
-   'computers_accessories','sports_leisure','bed_bath_table','watches_gifts','health_beauty'],
-  [584219,685384,719330,778398,902512,1059272,1156656,1241682,1305542,1441248],
-  ['#1565C0','#1976D2','#1E88E5','#2196F3','#42A5F5','#64B5F6','#90CAF9','#BBDEFB','#1565C0','#0D47A1'].reverse(),
-  {
-    tooltipLabel: ctx => `R$ ${ctx.parsed.x.toLocaleString()}`,
-    xTick: v => `R$ ${(v/1e3).toFixed(0)}K`,
-  }
-);
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('.tab')[['overview','revenue','delivery'].indexOf(id)].classList.add('active');
+  if (!done[id]) { TAB_INIT[id](); done[id] = true; }
+}
 
-// Revenue by state
-hbarChart(
-  'chart-states',
-  ['Espírito Santo (ES)','Goiás (GO)','Distrito Federal (DF)','Bahia (BA)',
-   'Santa Catarina (SC)','Paraná (PR)','Rio Grande do Sul (RS)',
-   'Minas Gerais (MG)','Rio de Janeiro (RJ)','São Paulo (SP)'],
-  [325968,350092,355141,616646,623086,811156,890899,1872257,2144380,5998227],
-  ['#2E7D32','#388E3C','#43A047','#4CAF50','#66BB6A','#81C784','#A5D6A7','#1B5E20','#2E7D32','#388E3C'].reverse(),
-  {
-    tooltipLabel: ctx => `R$ ${ctx.parsed.x.toLocaleString()}`,
-    xTick: v => `R$ ${(v/1e6).toFixed(1)}M`,
-  }
-);
-
-// Monthly revenue only — Revenue tab
-new Chart(document.getElementById('chart-monthly-rev'), {
-  type: 'line',
-  data: {
-    labels: MONTHLY_LABELS,
-    datasets: [{
-      label: 'Revenue (BRL)', data: MONTHLY_REVENUE,
-      borderColor: '#1565C0', backgroundColor: '#1565C020',
-      fill: true, tension: 0.3, pointRadius: 3,
-    }],
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: ctx => `R$ ${ctx.parsed.y.toLocaleString()}` } },
-    },
-    scales: {
-      x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } },
-      y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 9 }, callback: v => `R$ ${(v/1e6).toFixed(1)}M` } },
-    },
-  },
-});
-
-// Review score — Delivery tab
-barChart(
-  'chart-review-delivery',
-  ['1 ★','2 ★','3 ★','4 ★','5 ★'],
-  [9355,2921,7917,18888,56749],
-  SCORE_COLORS,
-  { tooltipLabel: ctx => `${ctx.parsed.y.toLocaleString()} orders`, yTick: v => v.toLocaleString() }
-);
-
-// % Late by score — Delivery tab
-barChart(
-  'chart-late-delivery',
-  ['1 ★','2 ★','3 ★','4 ★','5 ★'],
-  [36.7,18.9,8.8,3.4,1.9],
-  SCORE_COLORS,
-  { tooltipLabel: ctx => `${ctx.parsed.y}% late`, yTick: v => `${v}%` }
-);
+/* ── Init Overview on page load ───────────────────────────────────────────── */
+initOverview();
+done.overview = true;
 </script>
 </body>
 </html>

@@ -4,420 +4,408 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Olist E-Commerce Dashboard</title>
-
-  <!-- React 18 + Recharts + Babel (no build step required) -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/recharts@2/umd/Recharts.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Inter, system-ui, sans-serif; background: #F5F7FA; }
-    button:focus { outline: none; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #F5F7FA; color: #333; }
+
+    /* ── Layout ── */
+    .page        { max-width: 1400px; margin: 0 auto; padding: 24px 28px; }
+    .header      { margin-bottom: 20px; }
+    .header h1   { font-size: 20px; font-weight: 700; color: #1A237E; }
+    .header p    { font-size: 12px; color: #999; margin-top: 4px; }
+
+    /* ── Tabs ── */
+    .tabs        { display: flex; gap: 4px; border-bottom: 2px solid #e8eaf6; margin-bottom: 20px; }
+    .tab         { background: none; border: none; cursor: pointer; padding: 8px 18px;
+                   font-size: 13px; font-weight: 500; color: #888;
+                   border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color .15s; }
+    .tab.active  { color: #1565C0; border-bottom-color: #1565C0; }
+
+    /* ── KPI cards ── */
+    .kpi-row     { display: flex; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+    .kpi-card    { background: #fff; border-radius: 8px; flex: 1; min-width: 170px;
+                   box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
+    .kpi-bar     { height: 6px; }
+    .kpi-body    { padding: 14px 18px; }
+    .kpi-value   { font-size: 24px; font-weight: 700; line-height: 1.2; }
+    .kpi-label   { font-size: 12px; color: #777; margin-top: 5px; font-weight: 500; }
+    .kpi-sub     { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+    /* ── Chart grid ── */
+    .grid-2      { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .grid-2-1    { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .card        { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.08); padding: 16px 18px; }
+    .card h3     { font-size: 13px; font-weight: 600; color: #1A237E; margin-bottom: 14px; }
+    .card canvas { display: block; }
+
+    /* ── Insight callout ── */
+    .insight-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 14px; }
+    .insight-tile { border-radius: 8px; padding: 14px 12px; text-align: center; }
+    .insight-pct  { font-size: 22px; font-weight: 700; }
+    .insight-for  { font-size: 12px; color: #555; margin-top: 4px; }
+    .insight-score{ font-size: 13px; font-weight: 600; color: #333; margin-top: 2px; }
+    .insight-note { font-size: 12px; color: #666; line-height: 1.7; }
+
+    /* ── Hidden tabs ── */
+    .tab-panel           { display: none; }
+    .tab-panel.active    { display: block; }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+<div class="page">
 
-  <script type="text/babel">
-    const { useState } = React;
-    const {
-      ComposedChart, BarChart, Bar,
-      XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-      ResponsiveContainer, PieChart, Pie, Cell, Area,
-    } = Recharts;
+  <!-- Header -->
+  <div class="header">
+    <h1>Olist Brazilian E-Commerce — Analytics Dashboard</h1>
+    <p>Source: our-project-93971.Extracted_data_star · dbt star schema · 2016–2018</p>
+  </div>
 
-    /* ── Embedded data ─────────────────────────────────────────────────────
-       Source: our-project-93971.Extracted_data_star (dbt star schema)
-       Monthly data from 2017-08 onward estimated from observed trend.
-       ───────────────────────────────────────────────────────────────────── */
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab"        onclick="switchTab('revenue')">Revenue</button>
+    <button class="tab"        onclick="switchTab('delivery')">Delivery &amp; Satisfaction</button>
+  </div>
 
-    const KPIS = {
-      totalRevenue:   16008872,
-      totalOrders:    99441,
-      avgReviewScore: 4.09,
-      pctOnTime:      93.2,
-    };
+  <!-- KPI row (always visible) -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-bar" style="background:#1565C0"></div>
+      <div class="kpi-body">
+        <div class="kpi-value" style="color:#1565C0">R$ 16.01M</div>
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-sub">All orders</div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-bar" style="background:#2E7D32"></div>
+      <div class="kpi-body">
+        <div class="kpi-value" style="color:#2E7D32">99,441</div>
+        <div class="kpi-label">Total Orders</div>
+        <div class="kpi-sub">99,441 records</div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-bar" style="background:#E65100"></div>
+      <div class="kpi-body">
+        <div class="kpi-value" style="color:#E65100">4.09 / 5</div>
+        <div class="kpi-label">Avg Review Score</div>
+        <div class="kpi-sub">95,830 reviews</div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-bar" style="background:#6A1B9A"></div>
+      <div class="kpi-body">
+        <div class="kpi-value" style="color:#6A1B9A">93.2%</div>
+        <div class="kpi-label">% On-Time Delivery</div>
+        <div class="kpi-sub">96,476 delivered</div>
+      </div>
+    </div>
+  </div>
 
-    const MONTHLY = [
-      { period: '2016-09', orders: 3,    revenue: 355 },
-      { period: '2016-10', orders: 308,  revenue: 56809 },
-      { period: '2016-12', orders: 1,    revenue: 20 },
-      { period: '2017-01', orders: 789,  revenue: 137188 },
-      { period: '2017-02', orders: 1733, revenue: 286281 },
-      { period: '2017-03', orders: 2641, revenue: 432049 },
-      { period: '2017-04', orders: 2391, revenue: 412422 },
-      { period: '2017-05', orders: 3660, revenue: 586191 },
-      { period: '2017-06', orders: 3217, revenue: 502963 },
-      { period: '2017-07', orders: 3969, revenue: 584972 },
-      { period: '2017-08', orders: 4335, revenue: 660000 },
-      { period: '2017-09', orders: 4177, revenue: 636000 },
-      { period: '2017-10', orders: 4631, revenue: 707000 },
-      { period: '2017-11', orders: 7544, revenue: 1153000 },
-      { period: '2017-12', orders: 5673, revenue: 883000 },
-      { period: '2018-01', orders: 7269, revenue: 1098000 },
-      { period: '2018-02', orders: 6448, revenue: 943000 },
-      { period: '2018-03', orders: 7158, revenue: 1038000 },
-      { period: '2018-04', orders: 6794, revenue: 972000 },
-      { period: '2018-05', orders: 6971, revenue: 1015000 },
-      { period: '2018-06', orders: 6241, revenue: 924000 },
-      { period: '2018-07', orders: 6146, revenue: 897000 },
-      { period: '2018-08', orders: 6190, revenue: 907000 },
-    ];
+  <!-- ── Overview tab ─────────────────────────────────────────────────────── -->
+  <div id="tab-overview" class="tab-panel active">
+    <div class="grid-2-1">
+      <div class="card">
+        <h3>Monthly Revenue &amp; Order Volume</h3>
+        <canvas id="chart-monthly" height="220"></canvas>
+      </div>
+      <div class="card">
+        <h3>Order Status Distribution</h3>
+        <canvas id="chart-status" height="220"></canvas>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Review Score Distribution</h3>
+        <canvas id="chart-review-overview" height="200"></canvas>
+      </div>
+      <div class="card">
+        <h3>% Orders Delivered Late by Review Score</h3>
+        <canvas id="chart-late-overview" height="200"></canvas>
+      </div>
+    </div>
+  </div>
 
-    const TOP_CATEGORIES = [
-      { name: 'health_beauty',         revenue: 1441248 },
-      { name: 'watches_gifts',         revenue: 1305542 },
-      { name: 'bed_bath_table',        revenue: 1241682 },
-      { name: 'sports_leisure',        revenue: 1156656 },
-      { name: 'computers_accessories', revenue: 1059272 },
-      { name: 'furniture_decor',       revenue: 902512 },
-      { name: 'housewares',            revenue: 778398 },
-      { name: 'cool_stuff',            revenue: 719330 },
-      { name: 'auto',                  revenue: 685384 },
-      { name: 'garden_tools',          revenue: 584219 },
-    ];
+  <!-- ── Revenue tab ──────────────────────────────────────────────────────── -->
+  <div id="tab-revenue" class="tab-panel">
+    <div class="grid-2">
+      <div class="card">
+        <h3>Top 10 Product Categories by Revenue</h3>
+        <canvas id="chart-categories" height="280"></canvas>
+      </div>
+      <div class="card">
+        <h3>Revenue by Customer State (Top 10)</h3>
+        <canvas id="chart-states" height="280"></canvas>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h3>Monthly Revenue Trend (full period)</h3>
+      <canvas id="chart-monthly-rev" height="180"></canvas>
+    </div>
+  </div>
 
-    const REVENUE_BY_STATE = [
-      { state: 'São Paulo (SP)',          revenue: 5998227, orders: 41746 },
-      { state: 'Rio de Janeiro (RJ)',     revenue: 2144380, orders: 12852 },
-      { state: 'Minas Gerais (MG)',       revenue: 1872257, orders: 11635 },
-      { state: 'Rio Grande do Sul (RS)',  revenue: 890899,  orders: 5466 },
-      { state: 'Paraná (PR)',             revenue: 811156,  orders: 5045 },
-      { state: 'Santa Catarina (SC)',     revenue: 623086,  orders: 3637 },
-      { state: 'Bahia (BA)',              revenue: 616646,  orders: 3380 },
-      { state: 'Distrito Federal (DF)',   revenue: 355141,  orders: 2140 },
-      { state: 'Goiás (GO)',              revenue: 350092,  orders: 2020 },
-      { state: 'Espírito Santo (ES)',     revenue: 325968,  orders: 2033 },
-    ];
-
-    const REVIEW_DIST = [
-      { score: '1 ★', count: 9355,  color: '#EF5350' },
-      { score: '2 ★', count: 2921,  color: '#FF7043' },
-      { score: '3 ★', count: 7917,  color: '#FFA726' },
-      { score: '4 ★', count: 18888, color: '#9CCC65' },
-      { score: '5 ★', count: 56749, color: '#4CAF50' },
-    ];
-
-    const ORDER_STATUS = [
-      { status: 'delivered',   count: 96478 },
-      { status: 'shipped',     count: 1107 },
-      { status: 'canceled',    count: 625 },
-      { status: 'unavailable', count: 609 },
-      { status: 'invoiced',    count: 314 },
-      { status: 'processing',  count: 301 },
-      { status: 'created',     count: 5 },
-      { status: 'approved',    count: 2 },
-    ];
-
-    const DELIVERY_BY_SCORE = [
-      { score: '1 ★', pctLate: 36.7, color: '#EF5350' },
-      { score: '2 ★', pctLate: 18.9, color: '#FF7043' },
-      { score: '3 ★', pctLate: 8.8,  color: '#FFA726' },
-      { score: '4 ★', pctLate: 3.4,  color: '#9CCC65' },
-      { score: '5 ★', pctLate: 1.9,  color: '#4CAF50' },
-    ];
-
-    const STATUS_COLORS = ['#1976D2','#FFA726','#EF5350','#AB47BC','#66BB6A','#78909C','#8D6E63','#00ACC1'];
-
-    /* ── Helpers ─────────────────────────────────────────────────────────── */
-    const fmtM = v => `R$ ${(v / 1e6).toFixed(2)}M`;
-    const fmtK = v => v >= 1e6 ? fmtM(v) : `R$ ${(v / 1e3).toFixed(0)}K`;
-
-    /* ── Custom tooltip ──────────────────────────────────────────────────── */
-    function CustomTooltip({ active, payload, label, formatter }) {
-      if (!active || !payload || !payload.length) return null;
-      return (
-        <div style={{
-          background: '#fff', border: '1px solid #e0e0e0', borderRadius: 6,
-          padding: '10px 14px', fontSize: 12, boxShadow: '0 2px 8px rgba(0,0,0,.12)',
-        }}>
-          {label && <p style={{ margin: '0 0 6px', fontWeight: 600, color: '#333' }}>{label}</p>}
-          {payload.map((p, i) => (
-            <p key={i} style={{ margin: '3px 0', color: p.color || p.fill }}>
-              {p.name}:{' '}
-              <strong>{formatter ? formatter(p.name, p.value) : p.value.toLocaleString()}</strong>
-            </p>
-          ))}
+  <!-- ── Delivery & Satisfaction tab ─────────────────────────────────────── -->
+  <div id="tab-delivery" class="tab-panel">
+    <div class="grid-2" style="margin-bottom:14px">
+      <div class="card">
+        <h3>Review Score Distribution</h3>
+        <canvas id="chart-review-delivery" height="220"></canvas>
+      </div>
+      <div class="card">
+        <h3>% Orders Delivered Late by Review Score</h3>
+        <canvas id="chart-late-delivery" height="220"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Key Insight — Delivery Delay vs Customer Satisfaction</h3>
+      <div class="insight-grid">
+        <div class="insight-tile" style="background:#EF535018;border:1px solid #EF535055">
+          <div class="insight-pct" style="color:#EF5350">36.7%</div>
+          <div class="insight-for">late for</div>
+          <div class="insight-score">1 ★</div>
         </div>
-      );
-    }
-
-    /* ── KPI card ────────────────────────────────────────────────────────── */
-    function KPICard({ label, value, color, subtitle }) {
-      return (
-        <div style={{
-          background: '#fff', borderRadius: 8, flex: 1, minWidth: 170,
-          boxShadow: '0 1px 4px rgba(0,0,0,.08)', overflow: 'hidden',
-        }}>
-          <div style={{ background: color, height: 6 }} />
-          <div style={{ padding: '14px 18px' }}>
-            <div style={{ fontSize: 24, fontWeight: 700, color, lineHeight: 1.2 }}>{value}</div>
-            <div style={{ fontSize: 12, color: '#777', marginTop: 5, fontWeight: 500 }}>{label}</div>
-            {subtitle && <div style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>{subtitle}</div>}
-          </div>
+        <div class="insight-tile" style="background:#FF704318;border:1px solid #FF704355">
+          <div class="insight-pct" style="color:#FF7043">18.9%</div>
+          <div class="insight-for">late for</div>
+          <div class="insight-score">2 ★</div>
         </div>
-      );
-    }
-
-    /* ── Chart card wrapper ──────────────────────────────────────────────── */
-    function ChartCard({ title, children, style }) {
-      return (
-        <div style={{
-          background: '#fff', borderRadius: 8,
-          boxShadow: '0 1px 4px rgba(0,0,0,.08)',
-          padding: '16px 18px', ...style,
-        }}>
-          <h3 style={{ margin: '0 0 14px', fontSize: 13, fontWeight: 600, color: '#1A237E', letterSpacing: 0.2 }}>
-            {title}
-          </h3>
-          {children}
+        <div class="insight-tile" style="background:#FFA72618;border:1px solid #FFA72655">
+          <div class="insight-pct" style="color:#FFA726">8.8%</div>
+          <div class="insight-for">late for</div>
+          <div class="insight-score">3 ★</div>
         </div>
-      );
-    }
-
-    /* ── Dashboard ───────────────────────────────────────────────────────── */
-    function Dashboard() {
-      const [activeTab, setActiveTab] = useState('overview');
-
-      const tabs = [
-        { id: 'overview', label: 'Overview' },
-        { id: 'revenue',  label: 'Revenue' },
-        { id: 'delivery', label: 'Delivery & Satisfaction' },
-      ];
-
-      return (
-        <div style={{ background: '#F5F7FA', minHeight: '100vh', padding: '24px 28px' }}>
-
-          {/* Header */}
-          <div style={{ marginBottom: 20 }}>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: '#1A237E' }}>
-              Olist Brazilian E-Commerce — Analytics Dashboard
-            </h1>
-            <p style={{ fontSize: 12, color: '#999', marginTop: 4 }}>
-              Source: our-project-93971.Extracted_data_star · dbt star schema · 2016–2018
-            </p>
-          </div>
-
-          {/* Tabs */}
-          <div style={{ display: 'flex', gap: 4, marginBottom: 20, borderBottom: '2px solid #e8eaf6' }}>
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  padding: '8px 18px', fontSize: 13, fontWeight: 500,
-                  color: activeTab === tab.id ? '#1565C0' : '#888',
-                  borderBottom: activeTab === tab.id ? '2px solid #1565C0' : '2px solid transparent',
-                  marginBottom: -2, transition: 'color .15s',
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* KPI row — always visible */}
-          <div style={{ display: 'flex', gap: 14, marginBottom: 18, flexWrap: 'wrap' }}>
-            <KPICard label="Total Revenue"      color="#1565C0" value={fmtM(KPIS.totalRevenue)}                    subtitle="All orders" />
-            <KPICard label="Total Orders"       color="#2E7D32" value={KPIS.totalOrders.toLocaleString()}          subtitle="99,441 records" />
-            <KPICard label="Avg Review Score"   color="#E65100" value={`${KPIS.avgReviewScore.toFixed(2)} / 5`}    subtitle="95,830 reviews" />
-            <KPICard label="% On-Time Delivery" color="#6A1B9A" value={`${KPIS.pctOnTime}%`}                       subtitle="96,476 delivered" />
-          </div>
-
-          {/* ── Overview tab ────────────────────────────────────────────── */}
-          {activeTab === 'overview' && (
-            <>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14, marginBottom: 14 }}>
-                <ChartCard title="Monthly Revenue & Order Volume">
-                  <ResponsiveContainer width="100%" height={260}>
-                    <ComposedChart data={MONTHLY} margin={{ top: 4, right: 16, bottom: 55, left: 16 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="period" angle={-45} textAnchor="end" tick={{ fontSize: 10 }} interval={1} />
-                      <YAxis yAxisId="rev" orientation="left"  tickFormatter={v => `R$ ${(v/1e6).toFixed(1)}M`} tick={{ fontSize: 10 }} />
-                      <YAxis yAxisId="ord" orientation="right" tickFormatter={v => v.toLocaleString()}          tick={{ fontSize: 10 }} />
-                      <Tooltip content={
-                        <CustomTooltip formatter={(name, v) =>
-                          name === 'Revenue' ? fmtM(v) : v.toLocaleString()
-                        } />
-                      } />
-                      <Legend verticalAlign="top" wrapperStyle={{ fontSize: 12, paddingBottom: 6 }} />
-                      <Bar  yAxisId="ord" dataKey="orders"  name="Orders"  fill="#90CAF9" opacity={0.55} />
-                      <Area yAxisId="rev" type="monotone" dataKey="revenue" name="Revenue"
-                            stroke="#1565C0" fill="#1565C0" fillOpacity={0.15} strokeWidth={2} />
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-
-                <ChartCard title="Order Status Distribution">
-                  <ResponsiveContainer width="100%" height={260}>
-                    <PieChart>
-                      <Pie
-                        data={ORDER_STATUS} dataKey="count" nameKey="status"
-                        cx="50%" cy="42%" outerRadius={88}
-                        label={({ percent }) => percent > 0.02 ? `${(percent * 100).toFixed(1)}%` : ''}
-                        labelLine={false}
-                      >
-                        {ORDER_STATUS.map((_, i) => <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} />)}
-                      </Pie>
-                      <Tooltip formatter={v => v.toLocaleString()} />
-                      <Legend iconSize={10} wrapperStyle={{ fontSize: 11 }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                <ChartCard title="Review Score Distribution">
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={REVIEW_DIST} margin={{ top: 18, right: 16, left: 8 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="score" tick={{ fontSize: 12 }} />
-                      <YAxis tickFormatter={v => v.toLocaleString()} tick={{ fontSize: 10 }} />
-                      <Tooltip content={<CustomTooltip formatter={(_, v) => `${v.toLocaleString()} orders`} />} />
-                      <Bar dataKey="count" name="Orders" radius={[4, 4, 0, 0]}>
-                        {REVIEW_DIST.map((d, i) => <Cell key={i} fill={d.color} />)}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-
-                <ChartCard title="% Orders Delivered Late by Review Score">
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={DELIVERY_BY_SCORE} margin={{ top: 18, right: 16, left: 8 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="score" tick={{ fontSize: 12 }} />
-                      <YAxis tickFormatter={v => `${v}%`} domain={[0, 45]} tick={{ fontSize: 10 }} />
-                      <Tooltip content={<CustomTooltip formatter={(_, v) => `${v}%`} />} />
-                      <Bar dataKey="pctLate" name="% Late" radius={[4, 4, 0, 0]}>
-                        {DELIVERY_BY_SCORE.map((d, i) => <Cell key={i} fill={d.color} />)}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-              </div>
-            </>
-          )}
-
-          {/* ── Revenue tab ─────────────────────────────────────────────── */}
-          {activeTab === 'revenue' && (
-            <>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
-                <ChartCard title="Top 10 Product Categories by Revenue">
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={[...TOP_CATEGORIES].reverse()} layout="vertical"
-                              margin={{ top: 4, right: 60, left: 8, bottom: 4 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis type="number" tickFormatter={v => `${(v/1e3).toFixed(0)}K`} tick={{ fontSize: 10 }} />
-                      <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={152} />
-                      <Tooltip content={<CustomTooltip formatter={(_, v) => fmtK(v)} />} />
-                      <Bar dataKey="revenue" name="Revenue" radius={[0, 4, 4, 0]}>
-                        {TOP_CATEGORIES.map((_, i) => (
-                          <Cell key={i} fill={`hsl(210,${75 - i * 4}%,${55 - i * 2}%)`} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-
-                <ChartCard title="Revenue by Customer State (Top 10)">
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={[...REVENUE_BY_STATE].reverse()} layout="vertical"
-                              margin={{ top: 4, right: 60, left: 8, bottom: 4 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis type="number" tickFormatter={v => `R$ ${(v/1e6).toFixed(1)}M`} tick={{ fontSize: 10 }} />
-                      <YAxis type="category" dataKey="state" tick={{ fontSize: 10 }} width={170} />
-                      <Tooltip content={
-                        <CustomTooltip formatter={(name, v) =>
-                          name === 'Revenue' ? `R$ ${v.toLocaleString()}` : v.toLocaleString()
-                        } />
-                      } />
-                      <Bar dataKey="revenue" name="Revenue" radius={[0, 4, 4, 0]}>
-                        {REVENUE_BY_STATE.map((_, i) => (
-                          <Cell key={i} fill={`hsl(122,${60 - i * 4}%,${38 - i}%)`} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-              </div>
-
-              <ChartCard title="Monthly Revenue Trend (full period)">
-                <ResponsiveContainer width="100%" height={280}>
-                  <ComposedChart data={MONTHLY} margin={{ top: 4, right: 24, bottom: 55, left: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="period" angle={-45} textAnchor="end" tick={{ fontSize: 10 }} interval={1} />
-                    <YAxis tickFormatter={v => `R$ ${(v/1e6).toFixed(1)}M`} tick={{ fontSize: 10 }} />
-                    <Tooltip content={<CustomTooltip formatter={(_, v) => fmtM(v)} />} />
-                    <Area type="monotone" dataKey="revenue" name="Revenue"
-                          stroke="#1565C0" fill="#1565C0" fillOpacity={0.18} strokeWidth={2.5} />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </ChartCard>
-            </>
-          )}
-
-          {/* ── Delivery & Satisfaction tab ──────────────────────────────── */}
-          {activeTab === 'delivery' && (
-            <>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
-                <ChartCard title="Review Score Distribution">
-                  <ResponsiveContainer width="100%" height={280}>
-                    <BarChart data={REVIEW_DIST} margin={{ top: 20, right: 16, left: 8 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="score" tick={{ fontSize: 12 }} />
-                      <YAxis tickFormatter={v => v.toLocaleString()} tick={{ fontSize: 10 }} />
-                      <Tooltip content={<CustomTooltip formatter={(_, v) => `${v.toLocaleString()} orders`} />} />
-                      <Bar dataKey="count" name="Orders" radius={[4, 4, 0, 0]}>
-                        {REVIEW_DIST.map((d, i) => <Cell key={i} fill={d.color} />)}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-
-                <ChartCard title="% Orders Delivered Late by Review Score">
-                  <ResponsiveContainer width="100%" height={280}>
-                    <BarChart data={DELIVERY_BY_SCORE} margin={{ top: 20, right: 16, left: 8 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="score" tick={{ fontSize: 12 }} />
-                      <YAxis tickFormatter={v => `${v}%`} domain={[0, 45]} tick={{ fontSize: 10 }} />
-                      <Tooltip content={<CustomTooltip formatter={(_, v) => `${v}%`} />} />
-                      <Bar dataKey="pctLate" name="% Late" radius={[4, 4, 0, 0]}>
-                        {DELIVERY_BY_SCORE.map((d, i) => <Cell key={i} fill={d.color} />)}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-              </div>
-
-              <ChartCard title="Key Insight — Delivery Delay vs Customer Satisfaction">
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, marginBottom: 16 }}>
-                  {DELIVERY_BY_SCORE.map(d => (
-                    <div key={d.score} style={{
-                      background: `${d.color}18`, border: `1px solid ${d.color}55`,
-                      borderRadius: 8, padding: '14px 12px', textAlign: 'center',
-                    }}>
-                      <div style={{ fontSize: 22, fontWeight: 700, color: d.color }}>{d.pctLate}%</div>
-                      <div style={{ fontSize: 12, color: '#555', marginTop: 4 }}>late for</div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: '#333', marginTop: 2 }}>{d.score}</div>
-                    </div>
-                  ))}
-                </div>
-                <p style={{ fontSize: 12, color: '#666', lineHeight: 1.7 }}>
-                  <strong>36.7%</strong> of 1-star orders had late deliveries vs only <strong>1.9%</strong> of
-                  5-star orders — a <strong>19× difference</strong>. Late delivery is the strongest single
-                  predictor of low customer satisfaction in this dataset.
-                </p>
-              </ChartCard>
-            </>
-          )}
+        <div class="insight-tile" style="background:#9CCC6518;border:1px solid #9CCC6555">
+          <div class="insight-pct" style="color:#9CCC65">3.4%</div>
+          <div class="insight-for">late for</div>
+          <div class="insight-score">4 ★</div>
         </div>
-      );
-    }
+        <div class="insight-tile" style="background:#4CAF5018;border:1px solid #4CAF5055">
+          <div class="insight-pct" style="color:#4CAF50">1.9%</div>
+          <div class="insight-for">late for</div>
+          <div class="insight-score">5 ★</div>
+        </div>
+      </div>
+      <p class="insight-note">
+        <strong>36.7%</strong> of 1-star orders had late deliveries vs only <strong>1.9%</strong> of
+        5-star orders — a <strong>19× difference</strong>. Late delivery is the strongest single
+        predictor of low customer satisfaction in this dataset.
+      </p>
+    </div>
+  </div>
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<Dashboard />);
-  </script>
+</div><!-- .page -->
+
+<script>
+/* ── Data ─────────────────────────────────────────────────────────────────── */
+const MONTHLY_LABELS = [
+  '2016-09','2016-10','2016-12',
+  '2017-01','2017-02','2017-03','2017-04','2017-05','2017-06','2017-07',
+  '2017-08','2017-09','2017-10','2017-11','2017-12',
+  '2018-01','2018-02','2018-03','2018-04','2018-05','2018-06','2018-07','2018-08',
+];
+const MONTHLY_REVENUE = [
+  355,56809,20,
+  137188,286281,432049,412422,586191,502963,584972,
+  660000,636000,707000,1153000,883000,
+  1098000,943000,1038000,972000,1015000,924000,897000,907000,
+];
+const MONTHLY_ORDERS = [
+  3,308,1,
+  789,1733,2641,2391,3660,3217,3969,
+  4335,4177,4631,7544,5673,
+  7269,6448,7158,6794,6971,6241,6146,6190,
+];
+
+const SCORE_COLORS = ['#EF5350','#FF7043','#FFA726','#9CCC65','#4CAF50'];
+
+/* ── Tab switcher ─────────────────────────────────────────────────────────── */
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('.tab')[['overview','revenue','delivery'].indexOf(id)].classList.add('active');
+}
+
+/* ── Chart factory helpers ────────────────────────────────────────────────── */
+function barChart(id, labels, data, colors, opts = {}) {
+  return new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4, ...opts.dataset }] },
+    options: {
+      responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: opts.tooltipLabel } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, callback: opts.yTick } },
+      },
+    },
+  });
+}
+
+function hbarChart(id, labels, data, colors, opts = {}) {
+  return new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4, ...opts.dataset }] },
+    options: {
+      indexAxis: 'y', responsive: true,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: opts.tooltipLabel } } },
+      scales: {
+        x: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, callback: opts.xTick } },
+        y: { grid: { display: false }, ticks: { font: { size: 10 } } },
+      },
+    },
+  });
+}
+
+/* ── Build all charts ─────────────────────────────────────────────────────── */
+
+// Monthly — combo line + bar
+new Chart(document.getElementById('chart-monthly'), {
+  data: {
+    labels: MONTHLY_LABELS,
+    datasets: [
+      {
+        type: 'bar', label: 'Orders', data: MONTHLY_ORDERS,
+        backgroundColor: '#90CAF980', yAxisID: 'yOrd',
+      },
+      {
+        type: 'line', label: 'Revenue (BRL)', data: MONTHLY_REVENUE,
+        borderColor: '#1565C0', backgroundColor: '#1565C020',
+        fill: true, tension: 0.3, pointRadius: 3, yAxisID: 'yRev',
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: ctx => ctx.dataset.label === 'Revenue (BRL)'
+            ? `Revenue: R$ ${ctx.parsed.y.toLocaleString()}`
+            : `Orders: ${ctx.parsed.y.toLocaleString()}`,
+        },
+      },
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } },
+      yRev: {
+        position: 'left', grid: { color: '#f0f0f0' },
+        ticks: { font: { size: 9 }, callback: v => `R$ ${(v/1e6).toFixed(1)}M` },
+      },
+      yOrd: {
+        position: 'right', grid: { display: false },
+        ticks: { font: { size: 9 }, callback: v => v.toLocaleString() },
+      },
+    },
+  },
+});
+
+// Order status doughnut
+new Chart(document.getElementById('chart-status'), {
+  type: 'doughnut',
+  data: {
+    labels: ['delivered','shipped','canceled','unavailable','invoiced','processing','created','approved'],
+    datasets: [{
+      data: [96478,1107,625,609,314,301,5,2],
+      backgroundColor: ['#1976D2','#FFA726','#EF5350','#AB47BC','#66BB6A','#78909C','#8D6E63','#00ACC1'],
+    }],
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } },
+      tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toLocaleString()}` } },
+    },
+  },
+});
+
+// Review score — Overview
+barChart(
+  'chart-review-overview',
+  ['1 ★','2 ★','3 ★','4 ★','5 ★'],
+  [9355,2921,7917,18888,56749],
+  SCORE_COLORS,
+  { tooltipLabel: ctx => `${ctx.parsed.y.toLocaleString()} orders`, yTick: v => v.toLocaleString() }
+);
+
+// % Late by score — Overview
+barChart(
+  'chart-late-overview',
+  ['1 ★','2 ★','3 ★','4 ★','5 ★'],
+  [36.7,18.9,8.8,3.4,1.9],
+  SCORE_COLORS,
+  { tooltipLabel: ctx => `${ctx.parsed.y}% late`, yTick: v => `${v}%` }
+);
+
+// Top 10 categories
+hbarChart(
+  'chart-categories',
+  ['garden_tools','auto','cool_stuff','housewares','furniture_decor',
+   'computers_accessories','sports_leisure','bed_bath_table','watches_gifts','health_beauty'],
+  [584219,685384,719330,778398,902512,1059272,1156656,1241682,1305542,1441248],
+  ['#1565C0','#1976D2','#1E88E5','#2196F3','#42A5F5','#64B5F6','#90CAF9','#BBDEFB','#1565C0','#0D47A1'].reverse(),
+  {
+    tooltipLabel: ctx => `R$ ${ctx.parsed.x.toLocaleString()}`,
+    xTick: v => `R$ ${(v/1e3).toFixed(0)}K`,
+  }
+);
+
+// Revenue by state
+hbarChart(
+  'chart-states',
+  ['Espírito Santo (ES)','Goiás (GO)','Distrito Federal (DF)','Bahia (BA)',
+   'Santa Catarina (SC)','Paraná (PR)','Rio Grande do Sul (RS)',
+   'Minas Gerais (MG)','Rio de Janeiro (RJ)','São Paulo (SP)'],
+  [325968,350092,355141,616646,623086,811156,890899,1872257,2144380,5998227],
+  ['#2E7D32','#388E3C','#43A047','#4CAF50','#66BB6A','#81C784','#A5D6A7','#1B5E20','#2E7D32','#388E3C'].reverse(),
+  {
+    tooltipLabel: ctx => `R$ ${ctx.parsed.x.toLocaleString()}`,
+    xTick: v => `R$ ${(v/1e6).toFixed(1)}M`,
+  }
+);
+
+// Monthly revenue only — Revenue tab
+new Chart(document.getElementById('chart-monthly-rev'), {
+  type: 'line',
+  data: {
+    labels: MONTHLY_LABELS,
+    datasets: [{
+      label: 'Revenue (BRL)', data: MONTHLY_REVENUE,
+      borderColor: '#1565C0', backgroundColor: '#1565C020',
+      fill: true, tension: 0.3, pointRadius: 3,
+    }],
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => `R$ ${ctx.parsed.y.toLocaleString()}` } },
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } },
+      y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 9 }, callback: v => `R$ ${(v/1e6).toFixed(1)}M` } },
+    },
+  },
+});
+
+// Review score — Delivery tab
+barChart(
+  'chart-review-delivery',
+  ['1 ★','2 ★','3 ★','4 ★','5 ★'],
+  [9355,2921,7917,18888,56749],
+  SCORE_COLORS,
+  { tooltipLabel: ctx => `${ctx.parsed.y.toLocaleString()} orders`, yTick: v => v.toLocaleString() }
+);
+
+// % Late by score — Delivery tab
+barChart(
+  'chart-late-delivery',
+  ['1 ★','2 ★','3 ★','4 ★','5 ★'],
+  [36.7,18.9,8.8,3.4,1.9],
+  SCORE_COLORS,
+  { tooltipLabel: ctx => `${ctx.parsed.y}% late`, yTick: v => `${v}%` }
+);
+</script>
 </body>
 </html>

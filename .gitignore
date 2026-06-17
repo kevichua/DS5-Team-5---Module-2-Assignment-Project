@@ -24,6 +24,9 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
+# PowerPoint assets
+powerpoint_slides/
+
 # Claude Code
 .claude/settings.local.json
 

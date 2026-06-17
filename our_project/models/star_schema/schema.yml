@@ -25,7 +25,7 @@ models:
 
   - name: dim1_dates
     columns:
-      - name: date_day
+      - name: date_id
         tests:
           - unique
           - not_null

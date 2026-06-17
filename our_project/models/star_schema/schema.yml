@@ -1,0 +1,64 @@
+version: 2
+
+models:
+
+  - name: dim1_customers
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim1_products
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim1_sellers
+    columns:
+      - name: seller_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim1_dates
+    columns:
+      - name: date_day
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_orders1
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim1_customers')
+              field: customer_id
+
+  - name: fact_order1_items
+    columns:
+      - name: order_id
+        tests:
+          - relationships:
+              to: ref('fact_orders1')
+              field: order_id
+
+      - name: product_id
+        tests:
+          - relationships:
+              to: ref('dim1_products')
+              field: product_id
+
+      - name: seller_id
+        tests:
+          - relationships:
+              to: ref('dim1_sellers')
+              field: seller_id

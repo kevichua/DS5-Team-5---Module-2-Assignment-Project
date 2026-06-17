@@ -8,6 +8,6 @@ our_project:
       method: oauth
       priority: interactive
       project: our-project-93971
-      threads: 1
+      threads: 2
       type: bigquery
   target: dev

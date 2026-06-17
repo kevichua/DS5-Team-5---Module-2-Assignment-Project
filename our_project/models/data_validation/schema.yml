@@ -1,68 +1,17 @@
-# version: 2
-
-# models:
-#   - name: dq_orders
-#     description: "Flagged order rows. Empty table means clean data."
-#     columns:
-#       - name: order_id
-#         tests: [not_null]
-#       - name: issues
-#         tests: [not_null]
-
-#   - name: dq_customers
-#     description: "Flagged customer rows."
-#     columns:
-#       - name: issues
-#         tests: [not_null]
-
-#   - name: dq_order_items
-#     description: "Flagged order item rows."
-#     columns:
-#       - name: issues
-#         tests: [not_null]
-
-#   - name: dq_order_payments
-#     description: "Flagged payment rows."
-#     columns:
-#       - name: issues
-#         tests: [not_null]
-
-#   - name: dq_order_reviews
-#     description: "Flagged review rows."
-#     columns:
-#       - name: issues
-#         tests: [not_null]
-
-#   - name: dq_products
-#     description: "Flagged product rows."
-#     columns:
-#       - name: issues
-#         tests: [not_null]
-
-#   - name: dq_sellers
-#     description: "Flagged seller rows."
-#     columns:
-#       - name: issues
-#         tests: [not_null]
-
-#   - name: dq_geolocation
-#     description: "Flagged geolocation rows."
-#     columns:
-#       - name: issues
-#         tests: [not_null]
-
-#   - name: dq_category_name_translation
-#     description: "Flagged category translation rows."
-#     columns:
-#       - name: issues
-#         tests: [not_null]
-
-
-## With Great Expectation ##
 version: 2
 
 models:
-  - name: dq_customers
+  - name: dv_category_translation
+    columns:
+      - name: product_category_name
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
+          - dbt_expectations.expect_column_values_to_be_unique
+      - name: product_category_name_english
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
+
+  - name: dv_customers
     tests:
       - dbt_expectations.expect_table_row_count_to_be_between:
           min_value: 90000
@@ -83,10 +32,11 @@ models:
           - dbt_expectations.expect_column_values_to_not_be_null
       - name: customer_state
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: "^[A-Z]{2}$"
 
-  - name: dq_orders
+  - name: dv_orders
     tests:
       - dbt_expectations.expect_table_row_count_to_be_between:
           min_value: 90000
@@ -99,8 +49,12 @@ models:
       - name: customer_id
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
+          - relationships:
+              to: ref('dv_customers')
+              field: customer_id
       - name: order_status
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_be_in_set:
               value_set:
                 - delivered
@@ -115,7 +69,7 @@ models:
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
 
-  - name: dq_order_items
+  - name: dv_order_items
     tests:
       - dbt_expectations.expect_compound_columns_to_be_unique:
           column_list:
@@ -125,34 +79,49 @@ models:
       - name: order_id
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
+          - relationships:
+              to: ref('dv_orders')
+              field: order_id
       - name: order_item_id
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
       - name: product_id
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
+          - relationships:
+              to: ref('dv_products')
+              field: product_id
       - name: seller_id
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
+          - relationships:
+              to: ref('dv_sellers')
+              field: seller_id
       - name: price
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
       - name: freight_value
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
 
-  - name: dq_order_payments
+  - name: dv_order_payments
     columns:
       - name: order_id
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
+          - relationships:
+              to: ref('dv_orders')
+              field: order_id
       - name: payment_sequential
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
       - name: payment_type
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_be_in_set:
               value_set:
                 - credit_card
@@ -162,14 +131,16 @@ models:
                 - not_defined
       - name: payment_installments
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
       - name: payment_value
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
 
-  - name: dq_order_reviews
+  - name: dv_order_reviews
     columns:
       - name: review_id
         tests:
@@ -177,13 +148,17 @@ models:
       - name: order_id
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
+          - relationships:
+              to: ref('dv_orders')
+              field: order_id
       - name: review_score
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 1
               max_value: 5
 
-  - name: dq_products
+  - name: dv_products
     columns:
       - name: product_id
         tests:
@@ -209,7 +184,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
 
-  - name: dq_sellers
+  - name: dv_sellers
     columns:
       - name: seller_id
         tests:
@@ -223,35 +198,33 @@ models:
           - dbt_expectations.expect_column_values_to_not_be_null
       - name: seller_state
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: "^[A-Z]{2}$"
 
-  - name: dq_geolocation
+  - name: dv_geolocation
     columns:
       - name: geolocation_zip_code_prefix
         tests:
           - dbt_expectations.expect_column_values_to_not_be_null
+          - dbt_expectations.expect_column_values_to_be_unique
       - name: geolocation_lat
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: -34
               max_value: 6
       - name: geolocation_lng
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: -75
               max_value: -30
+      - name: geolocation_city
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
       - name: geolocation_state
         tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: "^[A-Z]{2}$"
-
-  - name: dq_category_name_translation
-    columns:
-      - name: product_category_name
-        tests:
-          - dbt_expectations.expect_column_values_to_not_be_null
-          - dbt_expectations.expect_column_values_to_be_unique
-      - name: product_category_name_english
-        tests:
-          - dbt_expectations.expect_column_values_to_not_be_null

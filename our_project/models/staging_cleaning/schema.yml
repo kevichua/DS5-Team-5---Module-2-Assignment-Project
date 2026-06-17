@@ -1,0 +1,61 @@
+version: 2
+
+models:
+
+  - name: sc_customers
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+
+  - name: sc_orders
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+
+  - name: sc_order_items
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+
+      - name: price
+        tests:
+          - not_null
+
+  - name: sc_order_payments
+    columns:
+      - name: payment_value
+        tests:
+          - not_null
+
+  - name: sc_order_reviews
+    columns:
+      - name: review_score
+        tests:
+          - not_null
+
+  - name: sc_products
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+
+  - name: sc_sellers
+    columns:
+      - name: seller_id
+        tests:
+          - not_null
+
+  - name: sc_geolocation
+    columns:
+      - name: geolocation_zip_code_prefix
+        tests:
+          - not_null
+
+  - name: sc_category_translation
+    columns:
+      - name: product_category_name
+        tests:
+          - not_null

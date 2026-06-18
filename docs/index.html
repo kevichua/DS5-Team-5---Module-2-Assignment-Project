@@ -204,7 +204,7 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
         <thead><tr>
           <th>State</th>
           <th>Revenue (R$)</th>
-          <th>Est. GDP</th>
+          <th>Est. GDP (B$)</th>
           <th>Rev Intensity</th>
           <th>Market Gap</th>
           <th>Group</th>
@@ -517,7 +517,7 @@ function renderStateTableRows() {
   tb.innerHTML = filtered.map(d => {
     const badge = TOP3.includes(d.state) ? `<span class="badge b-top">Top 3</span>`
                 : GROWTH.includes(d.state) ? `<span class="badge b-grow">Growth</span>` : '';
-    const val = metricFmt(metricVal(d,mapF.metric)||0, mapF.metric);
+    const val = metricFmt(metricVal(d,mapF.metric)||0, mapF.metric).replace('R$ ', '');
     return `<tr>
       <td><b>${d.state}</b> ${badge}</td>
       <td>${val}</td>
@@ -722,12 +722,12 @@ function renderGMTableRows() {
                    : d.market_gap_index > 0   ? 'color:#2e7d32'
                    : d.market_gap_index < -2   ? 'color:#b71c1c;font-weight:700'
                    : 'color:#c62828';
-    const gdpStr = d.estimated_gdp > 0 ? 'B$ '+(d.estimated_gdp/1e9).toFixed(1) : '—';
+    const gdpStr = d.estimated_gdp > 0 ? (d.estimated_gdp/1e9).toFixed(1) : '—';
     const intStr = d.estimated_gdp > 0 ? d.revenue_intensity.toLocaleString(undefined,{maximumFractionDigits:1}) : '—';
     const gapStr = hasGDP ? `<span style="${gapStyle}">${d.market_gap_index>0?'+':''}${d.market_gap_index}%</span>` : '—';
     return `<tr>
       <td><b>${d.state}</b></td>
-      <td>R$ ${Math.round(d.dyn_revenue).toLocaleString()}</td>
+      <td>${Math.round(d.dyn_revenue).toLocaleString()}</td>
       <td>${gdpStr}</td>
       <td>${intStr}</td>
       <td>${gapStr}</td>
@@ -968,7 +968,7 @@ function renderGrowthTableRows() {
     const badge = TOP3.includes(r.state) ? `<span class="badge b-top">Top 3</span>`
                 : GROWTH.includes(r.state) ? `<span class="badge b-grow">Growth</span>`
                 : '<span class="badge b-other">Other</span>';
-    const rev = r.total_revenue ? 'R$ '+r.total_revenue.toLocaleString() : '—';
+    const rev = r.total_revenue ? r.total_revenue.toLocaleString() : '—';
     return `<tr><td><b>${r.state}</b></td><td>${rev}</td><td>${r.total_orders?.toLocaleString()||'—'}</td><td>${r.avg_review||'—'}</td><td>${badge}</td></tr>`;
   }).join('');
 }

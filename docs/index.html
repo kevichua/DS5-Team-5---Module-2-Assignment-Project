@@ -390,6 +390,35 @@ function renderMap() {
   document.getElementById('th-metric').textContent = metricLabel(mapF.metric);
   document.getElementById('map-result').textContent = `Showing ${shown} state${shown!==1?'s':''}`;
   renderStateTable(filtered);
+  if(mapLegend.getContainer()) mapLegend.getContainer().innerHTML = getLegendHTML(mapF.metric);
+}
+
+function getLegendHTML(metric) {
+  if(metric==='avg_review') return `
+    <div style="font-weight:700;margin-bottom:6px;color:#1a237e">Avg Review Score</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(120,80%,40%)"></span> Excellent (≥4.5)</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(90,80%,40%)"></span> Good (3.5–4.5)</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(60,80%,40%)"></span> Average (2.5–3.5)</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(30,80%,40%)"></span> Poor (1.5–2.5)</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(0,80%,40%)"></span> Very Poor (≤1.5)</div>
+    <div style="margin-top:5px;font-size:0.7rem;color:#888">Circle size ∝ score</div>`;
+  if(metric==='pct_on_time') return `
+    <div style="font-weight:700;margin-bottom:6px;color:#1a237e">On-Time Delivery %</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(120,80%,38%)"></span> Excellent (≥98%)</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(90,80%,38%)"></span> Good (93–98%)</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(60,80%,38%)"></span> Average (87–93%)</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(30,80%,38%)"></span> Poor (80–87%)</div>
+    <div class="legend-row"><span class="ldot" style="background:hsl(0,80%,38%)"></span> Very Poor (≤80%)</div>
+    <div style="margin-top:5px;font-size:0.7rem;color:#888">Circle size ∝ on-time %</div>`;
+  const label = metric==='total_orders' ? 'Order Volume' : 'Revenue Tier';
+  return `
+    <div style="font-weight:700;margin-bottom:6px;color:#1a237e">${label}</div>
+    <div class="legend-row"><span class="ldot" style="width:16px;height:16px;background:#0d47a1"></span> Very High</div>
+    <div class="legend-row"><span class="ldot" style="width:13px;height:13px;background:#1565c0"></span> High</div>
+    <div class="legend-row"><span class="ldot" style="width:11px;height:11px;background:#1976d2"></span> Medium</div>
+    <div class="legend-row"><span class="ldot" style="width:9px;height:9px;background:#2196f3"></span> Low</div>
+    <div class="legend-row"><span class="ldot" style="width:7px;height:7px;background:#64b5f6"></span> Lowest</div>
+    <div style="margin-top:5px;font-size:0.7rem;color:#888">Circle size ∝ metric value</div>`;
 }
 
 function renderStateTable(data) {

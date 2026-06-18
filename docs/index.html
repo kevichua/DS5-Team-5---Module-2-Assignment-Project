@@ -744,48 +744,24 @@ function initTab(id) {
   if(id==='growth')   updateGrowthCharts();
 }
 
-// ─── CSV PARSER ───────────────────────────────────────────────────────────────
-function parseCSV(text) {
-  const rows = text.trim().split('\n');
-  const headers = rows[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
-  return rows.slice(1).map(line => {
-    const vals = [];
-    let cur = '', inQ = false;
-    for (const c of line) {
-      if (c === '"') { inQ = !inQ; }
-      else if (c === ',' && !inQ) { vals.push(cur); cur = ''; }
-      else cur += c;
-    }
-    vals.push(cur);
-    const obj = {};
-    headers.forEach((h, i) => {
-      const v = (vals[i] || '').replace(/^"|"$/g, '').trim();
-      obj[h] = v !== '' && !isNaN(v) && v !== 'true' && v !== 'false' ? Number(v) : v;
-    });
-    return obj;
-  });
-}
-
 // ─── DATA LOADER ──────────────────────────────────────────────────────────────
-const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/1sSpY1ZTZNIhJGB-LCOAPKY3woqTzNmKNaxK94_MtZp0/gviz/tq?tqx=out:csv&sheet=';
-
 async function initDashboard() {
   const overlay = document.getElementById('loading-overlay');
   try {
     const [kpi,state,monthly,cats,deliv,gap] = await Promise.all([
-      fetch(SHEET_BASE+'KPI').then(r=>r.text()),
-      fetch(SHEET_BASE+'STATE_DATA').then(r=>r.text()),
-      fetch(SHEET_BASE+'MONTHLY_ST').then(r=>r.text()),
-      fetch(SHEET_BASE+'CATS_DETAIL').then(r=>r.text()),
-      fetch(SHEET_BASE+'DELIV_DET').then(r=>r.text()),
-      fetch(SHEET_BASE+'GAP_DATA').then(r=>r.text()),
+      fetch('data/KPI.json').then(r=>r.json()),
+      fetch('data/STATE_DATA.json').then(r=>r.json()),
+      fetch('data/MONTHLY_ST.json').then(r=>r.json()),
+      fetch('data/CATS_DETAIL.json').then(r=>r.json()),
+      fetch('data/DELIV_DET.json').then(r=>r.json()),
+      fetch('data/GAP_DATA.json').then(r=>r.json()),
     ]);
-    KPI         = parseCSV(kpi)[0];
-    STATE_DATA  = parseCSV(state);
-    MONTHLY_ST  = parseCSV(monthly);
-    CATS_DETAIL = parseCSV(cats);
-    DELIV_DET   = parseCSV(deliv);
-    GAP_DATA    = parseCSV(gap);
+    KPI         = kpi[0];
+    STATE_DATA  = state;
+    MONTHLY_ST  = monthly;
+    CATS_DETAIL = cats;
+    DELIV_DET   = deliv;
+    GAP_DATA    = gap;
   } catch(e) {
     overlay.innerHTML = '<p style="color:#fff;font-size:1.1rem">Error loading data. Please refresh the page.</p>';
     console.error(e);

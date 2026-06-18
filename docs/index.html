@@ -915,7 +915,7 @@ function updateGrowthCharts() {
   document.getElementById('growth-result').textContent = `${rows.length} states`;
   document.getElementById('growth-table-title').textContent = `State Performance Summary — ${{all:'All',top3:'Top 3',growth:'Growth Targets',others:'Others'}[gF.group]}`;
 
-  // Pie: last-12m revenue split
+  // Chart-Pie: last-12m revenue split
   const top3Rev   = allGap.filter(d=>TOP3.includes(d.state)).reduce((s,d)=>s+d.total_revenue,0);
   const growthRev = allGap.filter(d=>GROWTH.includes(d.state)).reduce((s,d)=>s+d.total_revenue,0);
   const restRev   = allGap.reduce((s,d)=>s+d.total_revenue,0)-top3Rev-growthRev;

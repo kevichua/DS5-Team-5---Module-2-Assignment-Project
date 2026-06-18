@@ -323,7 +323,7 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
         </div>
         <div style="background:#e8f5e9;padding:14px;border-radius:6px;border-top:3px solid #2e7d32">
           <div style="font-weight:700;color:#2e7d32;margin-bottom:6px">2 · Capture New Markets</div>
-          <div style="color:#333">Target PR, BA, PE, CE &amp; GO — underserved vs GDP size. Projected R$1.5M additional revenue.</div>
+          <div style="color:#333">Target PA, BA, PE, CE &amp; AM — underserved vs GDP size. Projected R$1.5M additional revenue.</div>
         </div>
         <div style="background:#fff3e0;padding:14px;border-radius:6px;border-top:3px solid #e65100">
           <div style="font-weight:700;color:#e65100;margin-bottom:6px">3 · Product Budget Shift</div>
@@ -998,14 +998,13 @@ function initTab(id) {
 async function initDashboard() {
   const overlay = document.getElementById('loading-overlay');
   try {
-    const [kpi,state,monthly,cats,deliv,gap,meta,matrix] = await Promise.all([
+    const [kpi,state,monthly,cats,deliv,gap,matrix] = await Promise.all([
       fetch('data/KPI.json').then(r=>r.json()),
       fetch('data/STATE_DATA.json').then(r=>r.json()),
       fetch('data/MONTHLY_ST.json').then(r=>r.json()),
       fetch('data/CATS_DETAIL.json').then(r=>r.json()),
       fetch('data/DELIV_DET.json').then(r=>r.json()),
       fetch('data/GAP_DATA.json').then(r=>r.json()),
-      fetch('data/METADATA.json').then(r=>r.json()),
       fetch('data/GROWTH_MATRIX.json').then(r=>r.json()),
     ]);
     KPI         = kpi[0];
@@ -1019,7 +1018,14 @@ async function initDashboard() {
     TOP3 = [...matrix].sort((a,b)=>b.revenue_intensity-a.revenue_intensity).slice(0,3).map(d=>d.state);
     // GROWTH: top 5 states with positive market gap (GDP share > revenue share = untapped potential)
     GROWTH = [...matrix].filter(d=>d.market_gap_index>0).sort((a,b)=>b.market_gap_index-a.market_gap_index).slice(0,5).map(d=>d.state);
-    PROJ   = {PR:meta[0].PROJ_PR, BA:meta[0].PROJ_BA, PE:meta[0].PROJ_PE, CE:meta[0].PROJ_CE, GO:meta[0].PROJ_GO};
+    // PROJ: projected revenue if each growth state fully closes its market gap
+    // formula: current_revenue + (market_gap_index% × total national revenue)
+    const _totalRev = matrix.reduce((s,d)=>s+d.total_revenue,0);
+    PROJ = {};
+    GROWTH.forEach(s=>{
+      const d=matrix.find(m=>m.state===s);
+      if(d) PROJ[s]=Math.round(d.total_revenue+(d.market_gap_index/100)*_totalRev);
+    });
   } catch(e) {
     if(overlay) overlay.innerHTML = '<p style="color:#fff;font-size:1.1rem">Error loading data. Please refresh the page.</p>';
     console.error(e);

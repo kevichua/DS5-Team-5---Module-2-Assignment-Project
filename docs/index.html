@@ -55,7 +55,7 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
 .chart-wrap-lg{position:relative;height:320px}
 
 /* State table */
-.state-table{width:100%;border-collapse:collapse;font-size:0.8rem;margin-top:12px}
+.state-table{width:100%;border-collapse:collapse;font-size:18px;margin-top:12px}
 .state-table th{background:#1a237e;color:#fff;padding:7px 9px;text-align:left;font-weight:600;font-size:0.75rem}
 .state-table td{padding:6px 9px;border-bottom:1px solid #f0f0f0}
 .state-table tr:hover td{background:#e8f0fe}
@@ -117,10 +117,23 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
   </div>
   <div id="map"></div>
   <br/>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+    <span style="font-size:0.75rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.4px">Show</span>
+    <div class="btn-group" id="map-tbl-btns">
+      <button class="flt-btn"        onclick="setMapTableFilter('all',this)">All States</button>
+      <button class="flt-btn active" onclick="setMapTableFilter('top3',this)">Top 3</button>
+      <button class="flt-btn"        onclick="setMapTableFilter('growth',this)">Growth</button>
+      <button class="flt-btn"        onclick="setMapTableFilter('others',this)">Others</button>
+    </div>
+    <span id="map-tbl-count" style="font-size:0.75rem;color:#aaa;margin-left:4px"></span>
+  </div>
   <table class="state-table">
     <thead><tr>
-      <th>State</th><th id="th-metric">Revenue (R$)</th><th>Orders</th>
-      <th>Sellers</th><th>Avg Review</th><th>On-Time %</th>
+      <th>State</th><th id="th-metric">Revenue (R$)</th>
+      <th id="th-col-orders">Orders</th>
+      <th>Sellers</th>
+      <th id="th-col-review">Avg Review</th>
+      <th id="th-col-ontime">On-Time %</th>
     </tr></thead>
     <tbody id="state-tbody"></tbody>
   </table>
@@ -174,6 +187,18 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
       <p style="font-size:0.75rem;color:#888;margin:-4px 0 12px">Revenue Intensity = Revenue per R$1M GDP &nbsp;·&nbsp; Market Gap = GDP share% − Revenue share% &nbsp;·&nbsp; Positive gap = underserved market</p>
       <div style="height:440px;margin-bottom:10px"><canvas id="chart-gm-scatter"></canvas></div>
       <p style="font-size:0.78rem;color:#555;font-style:italic;background:#f8fafc;border-left:3px solid #1565c0;padding:8px 12px;border-radius:0 4px 4px 0;margin-bottom:16px">High revenue intensity means the company is generating revenue efficiently relative to the size of the economy, which may indicate strong market penetration or customer demand.</p>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:0.75rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.4px">Show</span>
+        <div class="btn-group" id="gm-filter-btns">
+          <button class="flt-btn"        onclick="setGMFilter('all',this)">All States</button>
+          <button class="flt-btn active" onclick="setGMFilter('top3',this)">Top 3</button>
+          <button class="flt-btn"        onclick="setGMFilter('growth',this)">Growth</button>
+          <button class="flt-btn"        onclick="setGMFilter('others',this)">Others</button>
+          <button class="flt-btn"        onclick="setGMFilter('positive',this)">+ Gap Only</button>
+          <button class="flt-btn"        onclick="setGMFilter('negative',this)">− Gap Only</button>
+        </div>
+        <span id="gm-filter-count" style="font-size:0.75rem;color:#aaa;margin-left:4px"></span>
+      </div>
       <div style="overflow-x:auto">
       <table class="state-table" id="growth-matrix-table">
         <thead><tr>
@@ -272,6 +297,16 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
     </div>
     <div class="chart-card full" id="growth-table-card">
       <h3 id="growth-table-title">State Performance Summary</h3>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:0.75rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.4px">Show</span>
+        <div class="btn-group" id="gt-filter-btns">
+          <button class="flt-btn"        onclick="setGTFilter('all',this)">All States</button>
+          <button class="flt-btn active" onclick="setGTFilter('top3',this)">Top 3</button>
+          <button class="flt-btn"        onclick="setGTFilter('growth',this)">Growth</button>
+          <button class="flt-btn"        onclick="setGTFilter('others',this)">Others</button>
+        </div>
+        <span id="gt-filter-count" style="font-size:0.75rem;color:#aaa;margin-left:4px"></span>
+      </div>
       <table class="state-table" id="growth-table">
         <thead><tr>
           <th>State</th><th>Revenue (last 12m)</th><th>Orders</th><th>Avg Review</th><th>Group</th>
@@ -283,16 +318,16 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
       <h3>Strategic Recommendations</h3>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px">
         <div style="background:#e3f2fd;padding:14px;border-radius:6px;border-top:3px solid #1565c0">
-          <div style="font-weight:700;color:#1565c0;margin-bottom:6px">1 · Customer Retention</div>
-          <div style="font-size:0.82rem;color:#333">Continue expansion in SP, RJ &amp; MG — contribute 63% of total revenue. High-GDP, proven market.</div>
+          <div style="font-weight:700;color:#1565c0;margin-bottom:6px">1 · Market Expansion</div>
+          <div style="color:#333">Continue strengthening presence in SP, RJ &amp; High-GDP, proven market.</div>
         </div>
         <div style="background:#e8f5e9;padding:14px;border-radius:6px;border-top:3px solid #2e7d32">
           <div style="font-weight:700;color:#2e7d32;margin-bottom:6px">2 · Capture New Markets</div>
-          <div style="font-size:0.82rem;color:#333">Target PR, BA, PE, CE &amp; GO — underserved vs GDP size. Projected R$1.5M additional revenue.</div>
+          <div style="color:#333">Target PR, BA, PE, CE &amp; GO — underserved vs GDP size. Projected R$1.5M additional revenue.</div>
         </div>
         <div style="background:#fff3e0;padding:14px;border-radius:6px;border-top:3px solid #e65100">
           <div style="font-weight:700;color:#e65100;margin-bottom:6px">3 · Product Budget Shift</div>
-          <div style="font-size:0.82rem;color:#333">Focus on: Health &amp; Beauty · Watches &amp; Gifts · Bed, Bath &amp; Table. Highest revenue + growth momentum.</div>
+          <div style="color:#333">Focus on: "Health &amp; Beauty", "Watches &amp; Gifts", "Bed, Bath &amp; Table" Achieve highest revenue &amp; growth momentum.</div>
         </div>
       </div>
     </div>
@@ -445,20 +480,53 @@ function getLegendHTML(metric) {
     <div style="margin-top:5px;font-size:0.7rem;color:#888">Circle size ∝ metric value</div>`;
 }
 
+let mapTableFilter = 'top3';
+let _mapTableData = [];
+
+function setMapTableFilter(val, btn) {
+  mapTableFilter = val;
+  document.querySelectorAll('#map-tbl-btns .flt-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderStateTableRows();
+}
+
 function renderStateTable(data) {
+  _mapTableData = data;
+  renderStateTableRows();
+}
+
+function renderStateTableRows() {
+  let filtered = _mapTableData;
+  if(mapTableFilter === 'top3')   filtered = _mapTableData.filter(d => TOP3.includes(d.state));
+  if(mapTableFilter === 'growth') filtered = _mapTableData.filter(d => GROWTH.includes(d.state));
+  if(mapTableFilter === 'others') filtered = _mapTableData.filter(d => !TOP3.includes(d.state) && !GROWTH.includes(d.state));
+
+  const countEl = document.getElementById('map-tbl-count');
+  if(countEl) countEl.textContent = filtered.length + ' of ' + _mapTableData.length + ' states';
+
+  // Hide the fixed column that duplicates the active metric
+  const showOrders = mapF.metric !== 'total_orders';
+  const showReview = mapF.metric !== 'avg_review';
+  const showOntime = mapF.metric !== 'pct_on_time';
+  const hide = el => { if(el) el.style.display = 'none'; };
+  const show = el => { if(el) el.style.display = ''; };
+  [showOrders ? show : hide, showReview ? show : hide, showOntime ? show : hide]
+    .forEach((fn, i) => fn(document.getElementById(['th-col-orders','th-col-review','th-col-ontime'][i])));
+
   const tb = document.getElementById('state-tbody');
-  tb.innerHTML='';
-  data.forEach(d=>{
-    const badge = TOP3.includes(d.state)?`<span class="badge b-top">Top 3</span>`:GROWTH.includes(d.state)?`<span class="badge b-grow">Growth</span>`:'';
+  tb.innerHTML = filtered.map(d => {
+    const badge = TOP3.includes(d.state) ? `<span class="badge b-top">Top 3</span>`
+                : GROWTH.includes(d.state) ? `<span class="badge b-grow">Growth</span>` : '';
     const val = metricFmt(metricVal(d,mapF.metric)||0, mapF.metric);
-    tb.innerHTML+=`<tr>
+    return `<tr>
       <td><b>${d.state}</b> ${badge}</td>
       <td>${val}</td>
-      <td>${Number(d.total_orders).toLocaleString()}</td>
+      ${showOrders ? `<td>${Number(d.total_orders).toLocaleString()}</td>` : ''}
       <td>${Number(d.seller_count||0).toLocaleString()}</td>
-      <td>${d.avg_review}</td>
-      <td>${d.pct_on_time}%</td></tr>`;
-  });
+      ${showReview ? `<td>${d.avg_review}</td>` : ''}
+      ${showOntime ? `<td>${d.pct_on_time}%</td>` : ''}
+    </tr>`;
+  }).join('');
 }
 
 function setMapMetric(m, btn) {
@@ -528,6 +596,14 @@ function getStateRevData() {
   rows.forEach(r=>{ map2[r.state]=(map2[r.state]||0)+r.total_revenue; });
   return Object.entries(map2).sort((a,b)=>b[1]-a[1]).slice(0,15)
     .map(([state,total_revenue])=>({state,total_revenue}));
+}
+
+let gmTableFilter = 'top3';
+function setGMFilter(val, btn) {
+  gmTableFilter = val;
+  document.querySelectorAll('#gm-filter-btns .flt-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderGMTableRows();
 }
 
 function renderGrowthMatrixTable() {
@@ -617,9 +693,26 @@ function renderGrowthMatrixTable() {
   });
 
   // ── Data table ─────────────────────────────────────────────────────────────
-  const hasGDP = GROWTH_MATRIX.some(d => d.estimated_gdp > 0);
+  window._gmTableData = tableData;
+  renderGMTableRows();
+}
+
+function renderGMTableRows() {
+  const tableData = window._gmTableData;
+  if(!tableData) return;
+  const hasGDP = GROWTH_MATRIX && GROWTH_MATRIX.some(d => d.estimated_gdp > 0);
+  let filtered = tableData;
+  if(gmTableFilter === 'top3')     filtered = tableData.filter(d => TOP3.includes(d.state));
+  if(gmTableFilter === 'growth')   filtered = tableData.filter(d => GROWTH.includes(d.state));
+  if(gmTableFilter === 'others')   filtered = tableData.filter(d => !TOP3.includes(d.state) && !GROWTH.includes(d.state));
+  if(gmTableFilter === 'positive') filtered = tableData.filter(d => d.market_gap_index > 0);
+  if(gmTableFilter === 'negative') filtered = tableData.filter(d => d.market_gap_index <= 0);
+
+  const countEl = document.getElementById('gm-filter-count');
+  if(countEl) countEl.textContent = filtered.length + ' of ' + tableData.length + ' states';
+
   const tbody = document.getElementById('gm-tbody');
-  tbody.innerHTML = tableData.map(d => {
+  tbody.innerHTML = filtered.map(d => {
     const badge = TOP3.includes(d.state)
       ? '<span class="badge b-top">Top 3</span>'
       : GROWTH.includes(d.state)
@@ -851,13 +944,33 @@ function updateGrowthCharts() {
   });
 
   // Table
-  const tb=document.getElementById('growth-tbody');
-  tb.innerHTML='';
-  rows.forEach(r=>{
-    const badge=TOP3.includes(r.state)?`<span class="badge b-top">Top 3</span>`:GROWTH.includes(r.state)?`<span class="badge b-grow">Growth</span>`:'';
-    const rev=r.total_revenue?'R$ '+r.total_revenue.toLocaleString():'—';
-    tb.innerHTML+=`<tr><td><b>${r.state}</b></td><td>${rev}</td><td>${r.total_orders?.toLocaleString()||'—'}</td><td>${r.avg_review||'—'}</td><td>${badge||r.group}</td></tr>`;
-  });
+  window._gtAllRows = rows;
+  renderGrowthTableRows();
+}
+
+let gtTableFilter = 'top3';
+function setGTFilter(val, btn) {
+  gtTableFilter = val;
+  document.querySelectorAll('#gt-filter-btns .flt-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderGrowthTableRows();
+}
+function renderGrowthTableRows() {
+  const allRows = window._gtAllRows || [];
+  let filtered = allRows;
+  if(gtTableFilter === 'top3')   filtered = allRows.filter(r => TOP3.includes(r.state));
+  if(gtTableFilter === 'growth') filtered = allRows.filter(r => GROWTH.includes(r.state));
+  if(gtTableFilter === 'others') filtered = allRows.filter(r => !TOP3.includes(r.state) && !GROWTH.includes(r.state));
+  const countEl = document.getElementById('gt-filter-count');
+  if(countEl) countEl.textContent = filtered.length + ' of ' + allRows.length + ' states';
+  const tb = document.getElementById('growth-tbody');
+  tb.innerHTML = filtered.map(r => {
+    const badge = TOP3.includes(r.state) ? `<span class="badge b-top">Top 3</span>`
+                : GROWTH.includes(r.state) ? `<span class="badge b-grow">Growth</span>`
+                : '<span class="badge b-other">Other</span>';
+    const rev = r.total_revenue ? 'R$ '+r.total_revenue.toLocaleString() : '—';
+    return `<tr><td><b>${r.state}</b></td><td>${rev}</td><td>${r.total_orders?.toLocaleString()||'—'}</td><td>${r.avg_review||'—'}</td><td>${badge}</td></tr>`;
+  }).join('');
 }
 
 function setGrowthFilter(key,val,btn) {

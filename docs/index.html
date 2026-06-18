@@ -282,9 +282,7 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
 // ─── EMBEDDED DATA ────────────────────────────────────────────────────────────
 let KPI, STATE_DATA, MONTHLY_ST, CATS_DETAIL, DELIV_DET, GAP_DATA;
 
-const NAMES = {"AC": "Acre", "AL": "Alagoas", "AM": "Amazonas", "AP": "Amapá", "BA": "Bahia", "CE": "Ceará", "DF": "Distrito Federal", "ES": "Espírito Santo", "GO": "Goiás", "MA": "Maranhão", "MG": "Minas Gerais", "MS": "Mato Grosso do Sul", "MT": "Mato Grosso", "PA": "Pará", "PB": "Paraíba", "PE": "Pernambuco", "PI": "Piauí", "PR": "Paraná", "RJ": "Rio de Janeiro", "RN": "Rio Grande do Norte", "RO": "Rondônia", "RR": "Roraima", "RS": "Rio Grande do Sul", "SC": "Santa Catarina", "SE": "Sergipe", "SP": "São Paulo", "TO": "Tocantins"};
-const TOP3   = ['SP','RJ','MG'];
-const GROWTH = ['PR','BA','PE','CE','GO'];
+let TOP3, GROWTH;
 const SCORE_COLORS = ['#ef5350','#ff7043','#ffa726','#9ccc65','#4caf50'];
 
 // ─── TAB SWITCHING ────────────────────────────────────────────────────────────
@@ -663,7 +661,7 @@ function resetDelFilters() {
 // GROWTH TAB
 // ══════════════════════════════════════════════════════════════════════════════
 let gF = {group:'all', sort:'revenue'};
-const PROJ = {PR:1006196,BA:824963,PE:572860,CE:532073,GO:484458};
+let PROJ = {};
 
 function getGapRows() {
   let rows = GAP_DATA.map(r=>{
@@ -748,13 +746,15 @@ function initTab(id) {
 async function initDashboard() {
   const overlay = document.getElementById('loading-overlay');
   try {
-    const [kpi,state,monthly,cats,deliv,gap] = await Promise.all([
+    const [kpi,state,monthly,cats,deliv,gap,meta,matrix] = await Promise.all([
       fetch('data/KPI.json').then(r=>r.json()),
       fetch('data/STATE_DATA.json').then(r=>r.json()),
       fetch('data/MONTHLY_ST.json').then(r=>r.json()),
       fetch('data/CATS_DETAIL.json').then(r=>r.json()),
       fetch('data/DELIV_DET.json').then(r=>r.json()),
       fetch('data/GAP_DATA.json').then(r=>r.json()),
+      fetch('data/METADATA.json').then(r=>r.json()),
+      fetch('data/GROWTH_MATRIX.json').then(r=>r.json()),
     ]);
     KPI         = kpi[0];
     STATE_DATA  = state;
@@ -762,6 +762,11 @@ async function initDashboard() {
     CATS_DETAIL = cats;
     DELIV_DET   = deliv;
     GAP_DATA    = gap;
+    // TOP3: top 3 states by revenue intensity (revenue per $1M GDP) — most penetrated markets
+    TOP3 = [...matrix].sort((a,b)=>b.revenue_intensity-a.revenue_intensity).slice(0,3).map(d=>d.state);
+    // GROWTH: top 5 states with positive market gap (GDP share > revenue share = untapped potential)
+    GROWTH = [...matrix].filter(d=>d.market_gap_index>0).sort((a,b)=>b.market_gap_index-a.market_gap_index).slice(0,5).map(d=>d.state);
+    PROJ   = {PR:meta[0].PROJ_PR, BA:meta[0].PROJ_BA, PE:meta[0].PROJ_PE, CE:meta[0].PROJ_CE, GO:meta[0].PROJ_GO};
   } catch(e) {
     overlay.innerHTML = '<p style="color:#fff;font-size:1.1rem">Error loading data. Please refresh the page.</p>';
     console.error(e);

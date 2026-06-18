@@ -1,0 +1,191 @@
+[
+  {
+    "state": "RS",
+    "total_revenue": 890898.54,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 25.0,
+    "market_gap_index": 2.0
+  },
+  {
+    "state": "PR",
+    "total_revenue": 811156.38,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 20.0,
+    "market_gap_index": 1.7
+  },
+  {
+    "state": "SC",
+    "total_revenue": 623086.43,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 16.67,
+    "market_gap_index": 1.4
+  },
+  {
+    "state": "BA",
+    "total_revenue": 616645.82,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 14.29,
+    "market_gap_index": 1.1
+  },
+  {
+    "state": "DF",
+    "total_revenue": 355141.08,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 12.5,
+    "market_gap_index": 0.8
+  },
+  {
+    "state": "GO",
+    "total_revenue": 350092.31,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 11.11,
+    "market_gap_index": -0.2
+  },
+  {
+    "state": "ES",
+    "total_revenue": 325967.55,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 10.0,
+    "market_gap_index": -0.4
+  },
+  {
+    "state": "SP",
+    "total_revenue": 5998226.96,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 100.0,
+    "market_gap_index": -0.5
+  },
+  {
+    "state": "PE",
+    "total_revenue": 324850.44,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 9.09,
+    "market_gap_index": -0.6
+  },
+  {
+    "state": "CE",
+    "total_revenue": 279464.03,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 8.33,
+    "market_gap_index": -0.8
+  },
+  {
+    "state": "RJ",
+    "total_revenue": 2144379.69,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 50.0,
+    "market_gap_index": -1.0
+  },
+  {
+    "state": "PA",
+    "total_revenue": 218295.85,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 7.69,
+    "market_gap_index": -1.0
+  },
+  {
+    "state": "MT",
+    "total_revenue": 187029.29,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 7.14,
+    "market_gap_index": -1.2
+  },
+  {
+    "state": "MA",
+    "total_revenue": 152523.02,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 6.67,
+    "market_gap_index": -1.4
+  },
+  {
+    "state": "MG",
+    "total_revenue": 1872257.26,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 33.33,
+    "market_gap_index": -1.5
+  },
+  {
+    "state": "PB",
+    "total_revenue": 141545.72,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 6.25,
+    "market_gap_index": -1.6
+  },
+  {
+    "state": "MS",
+    "total_revenue": 137534.84,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 5.88,
+    "market_gap_index": -1.8
+  },
+  {
+    "state": "PI",
+    "total_revenue": 108523.97,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 5.56,
+    "market_gap_index": -2.0
+  },
+  {
+    "state": "RN",
+    "total_revenue": 102718.13,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 5.26,
+    "market_gap_index": -2.2
+  },
+  {
+    "state": "AL",
+    "total_revenue": 96962.06,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 5.0,
+    "market_gap_index": -2.4
+  },
+  {
+    "state": "SE",
+    "total_revenue": 75246.25,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 4.76,
+    "market_gap_index": -2.6
+  },
+  {
+    "state": "TO",
+    "total_revenue": 61485.33,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 4.55,
+    "market_gap_index": -2.8
+  },
+  {
+    "state": "RO",
+    "total_revenue": 60866.2,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 4.35,
+    "market_gap_index": -3.0
+  },
+  {
+    "state": "AM",
+    "total_revenue": 27966.93,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 4.17,
+    "market_gap_index": -3.2
+  },
+  {
+    "state": "AC",
+    "total_revenue": 19680.62,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 4.0,
+    "market_gap_index": -3.4
+  },
+  {
+    "state": "AP",
+    "total_revenue": 16262.8,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 3.85,
+    "market_gap_index": -3.6
+  },
+  {
+    "state": "RR",
+    "total_revenue": 10064.62,
+    "estimated_gdp": 0.0,
+    "revenue_intensity": 3.7,
+    "market_gap_index": -3.8
+  }
+]

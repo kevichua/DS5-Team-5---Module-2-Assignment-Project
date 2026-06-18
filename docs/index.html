@@ -107,8 +107,8 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
       <label>Show Only</label>
       <select class="filter-select" onchange="filterMapGroup(this.value)">
         <option value="all">All States</option>
-        <option value="top3">Top 3 (SP, RJ, MG)</option>
-        <option value="growth">Growth Targets (PR, BA, PE, CE, GO)</option>
+        <option value="top3">Top 3</option>
+        <option value="growth">Growth Targets</option>
         <option value="others">Other States</option>
       </select>
     </div>
@@ -921,7 +921,7 @@ function updateGrowthCharts() {
   const restRev   = allGap.reduce((s,d)=>s+d.total_revenue,0)-top3Rev-growthRev;
   makeChart('chart-pie',{
     type:'doughnut',
-    data:{labels:['SP+RJ+MG (Top 3)','PR+BA+PE+CE+GO (Growth)','Other States'],
+    data:{labels:[TOP3.join('+')+' (Top 3)',GROWTH.join('+')+' (Growth)','Other States'],
       datasets:[{data:[top3Rev,growthRev,restRev],backgroundColor:['#0d47a1','#2e7d32','#b0bec5'],borderWidth:2,borderColor:'#fff'}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{tooltip:{callbacks:{label:ctx=>'R$ '+ctx.raw.toLocaleString()}}}
@@ -1018,6 +1018,9 @@ async function initDashboard() {
     TOP3 = [...matrix].sort((a,b)=>b.revenue_intensity-a.revenue_intensity).slice(0,3).map(d=>d.state);
     // GROWTH: top 5 states with positive market gap (GDP share > revenue share = untapped potential)
     GROWTH = [...matrix].filter(d=>d.market_gap_index>0).sort((a,b)=>b.market_gap_index-a.market_gap_index).slice(0,5).map(d=>d.state);
+    // Update dropdown option labels to reflect dynamic TOP3/GROWTH state lists
+    document.querySelectorAll('option[value="top3"]').forEach(el=>el.textContent=`Top 3 (${TOP3.join(', ')})`);
+    document.querySelectorAll('option[value="growth"]').forEach(el=>el.textContent=`Growth Targets (${GROWTH.join(', ')})`);
     // PROJ: projected revenue if each growth state fully closes its market gap
     // formula: current_revenue + (market_gap_index% × total national revenue)
     const _totalRev = matrix.reduce((s,d)=>s+d.total_revenue,0);

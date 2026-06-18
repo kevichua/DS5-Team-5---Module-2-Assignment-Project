@@ -1,191 +1,191 @@
 [
   {
-    "state": "RS",
-    "total_revenue": 890898.54,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 25.0,
-    "market_gap_index": 2.0
+    "state":"PA",
+    "total_revenue":218295.85,
+    "estimated_gdp":297000000000.0,
+    "revenue_intensity":0.74,
+    "market_gap_index":1.88
   },
   {
-    "state": "PR",
-    "total_revenue": 811156.38,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 20.0,
-    "market_gap_index": 1.7
+    "state":"CE",
+    "total_revenue":279464.03,
+    "estimated_gdp":288300000000.0,
+    "revenue_intensity":0.97,
+    "market_gap_index":1.4
   },
   {
-    "state": "SC",
-    "total_revenue": 623086.43,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 16.67,
-    "market_gap_index": 1.4
+    "state":"PE",
+    "total_revenue":324850.44,
+    "estimated_gdp":310400000000.0,
+    "revenue_intensity":1.05,
+    "market_gap_index":1.36
   },
   {
-    "state": "BA",
-    "total_revenue": 616645.82,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 14.29,
-    "market_gap_index": 1.1
+    "state":"AM",
+    "total_revenue":27966.93,
+    "estimated_gdp":137600000000.0,
+    "revenue_intensity":0.2,
+    "market_gap_index":1.33
   },
   {
-    "state": "DF",
-    "total_revenue": 355141.08,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 12.5,
-    "market_gap_index": 0.8
+    "state":"BA",
+    "total_revenue":616645.8199999999,
+    "estimated_gdp":447000000000.0,
+    "revenue_intensity":1.38,
+    "market_gap_index":1.03
   },
   {
-    "state": "GO",
-    "total_revenue": 350092.31,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 11.11,
-    "market_gap_index": -0.2
+    "state":"DF",
+    "total_revenue":355141.08,
+    "estimated_gdp":294500000000.0,
+    "revenue_intensity":1.21,
+    "market_gap_index":1.0
   },
   {
-    "state": "ES",
-    "total_revenue": 325967.55,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 10.0,
-    "market_gap_index": -0.4
+    "state":"PR",
+    "total_revenue":811156.38,
+    "estimated_gdp":545200000000.0,
+    "revenue_intensity":1.49,
+    "market_gap_index":0.88
   },
   {
-    "state": "SP",
-    "total_revenue": 5998226.96,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 100.0,
-    "market_gap_index": -0.5
+    "state":"MA",
+    "total_revenue":152523.02,
+    "estimated_gdp":158400000000.0,
+    "revenue_intensity":0.96,
+    "market_gap_index":0.78
   },
   {
-    "state": "PE",
-    "total_revenue": 324850.44,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 9.09,
-    "market_gap_index": -0.6
+    "state":"GO",
+    "total_revenue":350092.31,
+    "estimated_gdp":262500000000.0,
+    "revenue_intensity":1.33,
+    "market_gap_index":0.68
   },
   {
-    "state": "CE",
-    "total_revenue": 279464.03,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 8.33,
-    "market_gap_index": -0.8
+    "state":"RN",
+    "total_revenue":102718.13,
+    "estimated_gdp":100800000000.0,
+    "revenue_intensity":1.02,
+    "market_gap_index":0.46
   },
   {
-    "state": "RJ",
-    "total_revenue": 2144379.69,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 50.0,
-    "market_gap_index": -1.0
+    "state":"MT",
+    "total_revenue":187029.29,
+    "estimated_gdp":144400000000.0,
+    "revenue_intensity":1.3,
+    "market_gap_index":0.41
   },
   {
-    "state": "PA",
-    "total_revenue": 218295.85,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 7.69,
-    "market_gap_index": -1.0
+    "state":"PB",
+    "total_revenue":141545.72,
+    "estimated_gdp":118900000000.0,
+    "revenue_intensity":1.19,
+    "market_gap_index":0.41
   },
   {
-    "state": "MT",
-    "total_revenue": 187029.29,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 7.14,
-    "market_gap_index": -1.2
+    "state":"AL",
+    "total_revenue":96962.06,
+    "estimated_gdp":91800000000.0,
+    "revenue_intensity":1.06,
+    "market_gap_index":0.4
   },
   {
-    "state": "MA",
-    "total_revenue": 152523.02,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 6.67,
-    "market_gap_index": -1.4
+    "state":"MS",
+    "total_revenue":137534.84,
+    "estimated_gdp":107300000000.0,
+    "revenue_intensity":1.28,
+    "market_gap_index":0.31
   },
   {
-    "state": "MG",
-    "total_revenue": 1872257.26,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 33.33,
-    "market_gap_index": -1.5
+    "state":"RO",
+    "total_revenue":60866.2,
+    "estimated_gdp":61200000000.0,
+    "revenue_intensity":0.99,
+    "market_gap_index":0.29
   },
   {
-    "state": "PB",
-    "total_revenue": 141545.72,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 6.25,
-    "market_gap_index": -1.6
+    "state":"SE",
+    "total_revenue":75246.25,
+    "estimated_gdp":69600000000.0,
+    "revenue_intensity":1.08,
+    "market_gap_index":0.29
   },
   {
-    "state": "MS",
-    "total_revenue": 137534.84,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 5.88,
-    "market_gap_index": -1.8
+    "state":"AP",
+    "total_revenue":16262.8,
+    "estimated_gdp":25200000000.0,
+    "revenue_intensity":0.65,
+    "market_gap_index":0.17
   },
   {
-    "state": "PI",
-    "total_revenue": 108523.97,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 5.56,
-    "market_gap_index": -2.0
+    "state":"RR",
+    "total_revenue":10064.62,
+    "estimated_gdp":19980000000.0,
+    "revenue_intensity":0.5,
+    "market_gap_index":0.16
   },
   {
-    "state": "RN",
-    "total_revenue": 102718.13,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 5.26,
-    "market_gap_index": -2.2
+    "state":"SC",
+    "total_revenue":623086.4300000001,
+    "estimated_gdp":369600000000.0,
+    "revenue_intensity":1.69,
+    "market_gap_index":0.14
   },
   {
-    "state": "AL",
-    "total_revenue": 96962.06,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 5.0,
-    "market_gap_index": -2.4
+    "state":"AC",
+    "total_revenue":19680.62,
+    "estimated_gdp":22500000000.0,
+    "revenue_intensity":0.87,
+    "market_gap_index":0.12
   },
   {
-    "state": "SE",
-    "total_revenue": 75246.25,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 4.76,
-    "market_gap_index": -2.6
+    "state":"TO",
+    "total_revenue":61485.33,
+    "estimated_gdp":43200000000.0,
+    "revenue_intensity":1.42,
+    "market_gap_index":0.09
   },
   {
-    "state": "TO",
-    "total_revenue": 61485.33,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 4.55,
-    "market_gap_index": -2.8
+    "state":"PI",
+    "total_revenue":108523.97,
+    "estimated_gdp":69300000000.0,
+    "revenue_intensity":1.57,
+    "market_gap_index":0.08
   },
   {
-    "state": "RO",
-    "total_revenue": 60866.2,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 4.35,
-    "market_gap_index": -3.0
+    "state":"ES",
+    "total_revenue":325967.55,
+    "estimated_gdp":189000000000.0,
+    "revenue_intensity":1.72,
+    "market_gap_index":0.03
   },
   {
-    "state": "AM",
-    "total_revenue": 27966.93,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 4.17,
-    "market_gap_index": -3.2
+    "state":"RS",
+    "total_revenue":890898.54,
+    "estimated_gdp":501400000000.0,
+    "revenue_intensity":1.78,
+    "market_gap_index":-0.09
   },
   {
-    "state": "AC",
-    "total_revenue": 19680.62,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 4.0,
-    "market_gap_index": -3.4
+    "state":"MG",
+    "total_revenue":1872257.26,
+    "estimated_gdp":903000000000.0,
+    "revenue_intensity":2.07,
+    "market_gap_index":-1.84
   },
   {
-    "state": "AP",
-    "total_revenue": 16262.8,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 3.85,
-    "market_gap_index": -3.6
+    "state":"RJ",
+    "total_revenue":2144379.6899999999,
+    "estimated_gdp":825000000000.0,
+    "revenue_intensity":2.6,
+    "market_gap_index":-4.39
   },
   {
-    "state": "RR",
-    "total_revenue": 10064.62,
-    "estimated_gdp": 0.0,
-    "revenue_intensity": 3.7,
-    "market_gap_index": -3.8
+    "state":"SP",
+    "total_revenue":5998226.96,
+    "estimated_gdp":2760000000000.0,
+    "revenue_intensity":2.17,
+    "market_gap_index":-7.35
   }
 ]

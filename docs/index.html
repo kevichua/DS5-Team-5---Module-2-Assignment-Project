@@ -68,8 +68,8 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
 <body>
 
 <header>
-  <h1>🇧🇷 Olist Brazilian E-Commerce — Interactive Analytics Dashboard</h1>
-  <p>Clean data from BigQuery (Extracted_data) &nbsp;·&nbsp; DS5 Team 5 &nbsp;·&nbsp; June 2026 &nbsp;·&nbsp; Use filters in each tab to slice data</p>
+  <h1>Olist Brazilian E-Commerce — Interactive Analytics Dashboard</h1>
+  <p>Clean data from BigQuery (Extracted_data) &nbsp;·&nbsp; DS5 Team 5</p>
 </header>
 
 <div class="kpi-row">
@@ -278,6 +278,11 @@ header p{font-size:0.8rem;opacity:0.8;margin-top:3px}
   </div>
 </div>
 
+<div id="loading-overlay" style="position:fixed;inset:0;background:rgba(13,71,161,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px;">
+  <div style="width:48px;height:48px;border:5px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+  <p style="color:#fff;font-size:1.1rem;margin:0;">Loading dashboard data&hellip;</p>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 <script>
 // ─── EMBEDDED DATA ────────────────────────────────────────────────────────────
 let KPI, STATE_DATA, MONTHLY_ST, CATS_DETAIL, DELIV_DET, GAP_DATA;
@@ -768,7 +773,7 @@ async function initDashboard() {
     GROWTH = [...matrix].filter(d=>d.market_gap_index>0).sort((a,b)=>b.market_gap_index-a.market_gap_index).slice(0,5).map(d=>d.state);
     PROJ   = {PR:meta[0].PROJ_PR, BA:meta[0].PROJ_BA, PE:meta[0].PROJ_PE, CE:meta[0].PROJ_CE, GO:meta[0].PROJ_GO};
   } catch(e) {
-    overlay.innerHTML = '<p style="color:#fff;font-size:1.1rem">Error loading data. Please refresh the page.</p>';
+    if(overlay) overlay.innerHTML = '<p style="color:#fff;font-size:1.1rem">Error loading data. Please refresh the page.</p>';
     console.error(e);
     return;
   }
@@ -784,10 +789,5 @@ async function initDashboard() {
 }
 initDashboard();
 </script>
-<div id="loading-overlay" style="position:fixed;inset:0;background:rgba(13,71,161,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px;">
-  <div style="width:48px;height:48px;border:5px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-  <p style="color:#fff;font-size:1.1rem;margin:0;">Loading dashboard data&hellip;</p>
-</div>
-<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 </body>
 </html>
